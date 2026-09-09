@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Agenda de Social Media e Marketing Digital — iDigital CRM Premium 2.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#080808"
+    >
+
+    <title>Agenda | iDigital CRM Premium 2.0</title>
+
+
+    <!-- =====================================================
+         FONTE
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         CSS GLOBAL
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/agenda.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="app-shell">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         MESMA CONFIGURAÇÃO DO LEADS
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+
+        <!-- =================================================
+             BRAND
+        ================================================== -->
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                iD
+            </div>
+
+            <div>
+
+                iDigital CRM
+
+                <br>
+
+                <small class="muted">
+                    Premium 2.0
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             NAVEGAÇÃO
+        ================================================== -->
+
+        <nav
+            class="nav"
+            aria-label="Navegação principal"
+        >
+
+
+            <!-- DASHBOARD -->
+
+            <a href="dashboard.html">
+
+                <span class="ico">
+                    ⌂
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- CLIENTES -->
+
+            <a href="clientes.html">
+
+                <span class="ico">
+                    ♙
+                </span>
+
+                <span>
+                    Clientes &amp; Cobranças
+                </span>
+
+            </a>
+
+
+            <!-- LEADS -->
+
+            <a href="leads.html">
+
+                <span class="ico">
+                    ◈
+                </span>
+
+                <span>
+                    Leads &amp; Pipeline
+                </span>
+
+            </a>
+
+
+            <!-- AGENDA -->
+
+            <a
+                href="agenda.html"
+                class="active"
+                aria-current="page"
+            >
+
+                <span class="ico">
+                    ◷
+                </span>
+
+                <span>
+                    Agenda
+                </span>
+
+            </a>
+
+
+            <!-- CONFIGURAÇÕES -->
+
+            <a href="configuracoes.html">
+
+                <span class="ico">
+                    ⚙
+                </span>
+
+                <span>
+                    Configurações
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- =================================================
+             SIDEBAR FOOTER
+        ================================================== -->
+
+        <div class="sidebar-footer">
+
+
+            <!-- USUÁRIO -->
+
+            <div class="user-chip">
+
+                <div
+                    class="avatar"
+                    id="userAvatar"
+                >
+                    U
+                </div>
+
+                <div>
+
+                    <strong id="userName">
+                        Usuário
+                    </strong>
+
+                    <div
+                        class="muted"
+                        id="userEmail"
+                    >
+                        carregando...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOGOUT -->
+
+            <button
+                type="button"
+                class="btn btn-danger"
+                id="logoutBtn"
+            >
+                Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="btn menu-btn"
+                    id="menuBtn"
+                    aria-label="Abrir menu"
+                >
+                    ☰
+                </button>
+
+                <strong>
+                    Agenda
+                </strong>
+
+            </div>
+
+
+            <div
+                class="muted"
+                id="todayText"
+            ></div>
+
+        </header>
+
+
+        <!-- =================================================
+             PAGE
+        ================================================== -->
+
+        <div class="page agenda-page">
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="agenda-hero">
+
+
+                <div class="agenda-hero-content">
+
+                    <div class="agenda-kicker">
+                        SOCIAL MEDIA • MARKETING DIGITAL
+                    </div>
+
+
+                    <h1>
+                        Minha <span>Agenda</span>
+                    </h1>
+
+
+                    <p>
+                        Organize conteúdos, publicações,
+                        reuniões, entregas e tarefas dos seus
+                        clientes em um único lugar.
+                    </p>
+
+
+                    <!-- =========================================
+                         QUICK STATS
+                    ========================================== -->
+
+                    <div class="agenda-quick-stats">
+
+
+                        <div class="quick-stat">
+
+                            <strong id="conteudosHoje">
+                                0
+                            </strong>
+
+                            <span>
+                                Conteúdos hoje
+                            </span>
+
+                        </div>
+
+
+                        <div class="quick-stat">
+
+                            <strong id="publicacoesSemana">
+                                0
+                            </strong>
+
+                            <span>
+                                Publicações
+                            </span>
+
+                        </div>
+
+
+                        <div class="quick-stat">
+
+                            <strong id="entregasPendentes">
+                                0
+                            </strong>
+
+                            <span>
+                                Entregas
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- HERO ACTION -->
+
+                <div class="agenda-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="novoEventoBtn"
+                    >
+                        + Novo compromisso
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 LAYOUT PRINCIPAL
+            ================================================== -->
+
+            <div class="agenda-layout">
+
+
+                <!-- =================================================
+                     COLUNA PRINCIPAL
+                ================================================== -->
+
+                <section class="agenda-main-card">
+
+
+                    <!-- HEADER -->
+
+                    <div class="agenda-card-header">
+
+                        <div>
+
+                            <div class="agenda-kicker">
+                                PLANEJAMENTO
+                            </div>
+
+                            <h2>
+                                Próximos compromissos
+                            </h2>
+
+                            <p>
+                                Visualize tudo o que precisa ser
+                                produzido, publicado ou entregue.
+                            </p>
+
+                        </div>
+
+
+                        <!-- FILTROS -->
+
+                        <div class="agenda-filters">
+
+                            <select id="filtroAgenda">
+
+                                <option value="todos">
+                                    Todos
+                                </option>
+
+                                <option value="hoje">
+                                    Hoje
+                                </option>
+
+                                <option value="semana">
+                                    Esta semana
+                                </option>
+
+                                <option value="conteudo">
+                                    Conteúdo
+                                </option>
+
+                                <option value="reuniao">
+                                    Reuniões
+                                </option>
+
+                                <option value="entrega">
+                                    Entregas
+                                </option>
+
+                                <option value="pendentes">
+                                    Pendentes
+                                </option>
+
+                                <option value="concluidos">
+                                    Concluídos
+                                </option>
+
+                            </select>
+
+
+                            <button
+                                type="button"
+                                class="btn btn-sm"
+                                id="atualizarAgendaBtn"
+                            >
+                                ↻ Atualizar
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         LISTA DE COMPROMISSOS
+                    ================================================== -->
+
+                    <div
+                        class="agenda-list"
+                        id="agendaList"
+                    ></div>
+
+
+                    <!-- =================================================
+                         EMPTY
+                    ================================================== -->
+
+                    <div
+                        id="agendaEmpty"
+                        class="table-empty hidden"
+                    >
+
+                        <div class="empty-icon">
+                            ◷
+                        </div>
+
+                        <strong>
+                            Nenhum compromisso encontrado
+                        </strong>
+
+                        <span>
+                            Adicione uma atividade para começar
+                            seu planejamento.
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     MINI AGENDA
+                ================================================== -->
+
+                <aside class="mini-agenda-card">
+
+
+                    <!-- HEADER -->
+
+                    <div class="mini-agenda-header">
+
+                        <div>
+
+                            <div class="agenda-kicker">
+                                CALENDÁRIO
+                            </div>
+
+                            <h3>
+                                Minha agenda
+                            </h3>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="mini-calendar-today"
+                            id="miniAgendaHoje"
+                        >
+                            Hoje
+                        </button>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         MÊS
+                    ================================================== -->
+
+                    <div class="mini-calendar-title">
+
+                        <button
+                            type="button"
+                            class="calendar-nav"
+                            id="mesAnterior"
+                            aria-label="Mês anterior"
+                        >
+                            ‹
+                        </button>
+
+
+                        <strong id="mesAtual">
+                            Setembro 2026
+                        </strong>
+
+
+                        <button
+                            type="button"
+                            class="calendar-nav"
+                            id="mesProximo"
+                            aria-label="Próximo mês"
+                        >
+                            ›
+                        </button>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DIAS DA SEMANA
+                    ================================================== -->
+
+                    <div class="calendar-weekdays">
+
+                        <span>D</span>
+                        <span>S</span>
+                        <span>T</span>
+                        <span>Q</span>
+                        <span>Q</span>
+                        <span>S</span>
+                        <span>S</span>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DIAS
+                    ================================================== -->
+
+                    <div
+                        class="calendar-days"
+                        id="calendarDays"
+                    ></div>
+
+
+                    <!-- =================================================
+                         DIVISOR
+                    ================================================== -->
+
+                    <div class="mini-agenda-divider"></div>
+
+
+                    <!-- =================================================
+                         PRÓXIMO EVENTO
+                    ================================================== -->
+
+                    <div class="mini-next-event">
+
+                        <div class="mini-section-title">
+                            PRÓXIMO COMPROMISSO
+                        </div>
+
+
+                        <div
+                            class="mini-event"
+                            id="miniNextEvent"
+                        >
+
+                            <div class="mini-event-icon">
+                                ◷
+                            </div>
+
+                            <div class="mini-event-content">
+
+                                <strong>
+                                    Nenhum compromisso
+                                </strong>
+
+                                <span>
+                                    Sua agenda está livre.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         LEGENDA
+                    ================================================== -->
+
+                    <div class="mini-agenda-legend">
+
+
+                        <div>
+
+                            <span
+                                class="legend-dot content"
+                            ></span>
+
+                            Conteúdo
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="legend-dot meeting"
+                            ></span>
+
+                            Reunião
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="legend-dot delivery"
+                            ></span>
+
+                            Entrega
+
+                        </div>
+
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+
+            <!-- =================================================
+                 VISÃO DE HOJE
+            ================================================== -->
+
+            <section class="agenda-today-panel">
+
+
+                <!-- HEADER -->
+
+                <div class="today-panel-header">
+
+                    <div>
+
+                        <div class="agenda-kicker">
+                            HOJE
+                        </div>
+
+                        <h2>
+                            Produção e tarefas
+                        </h2>
+
+                    </div>
+
+
+                    <span
+                        class="today-date"
+                        id="todayDate"
+                    ></span>
+
+                </div>
+
+
+                <!-- =================================================
+                     TIMELINE
+                ================================================== -->
+
+                <div class="today-timeline">
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            09:00
+                        </div>
+
+                        <div class="timeline-line">
+                            <span></span>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Planejamento de conteúdo
+                            </strong>
+
+                            <span>
+                                Organizar posts e stories dos clientes
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            11:00
+                        </div>
+
+                        <div class="timeline-line">
+                            <span></span>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Produção de conteúdo
+                            </strong>
+
+                            <span>
+                                Criativos, legendas e materiais
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            14:00
+                        </div>
+
+                        <div class="timeline-line">
+                            <span></span>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Reunião com cliente
+                            </strong>
+
+                            <span>
+                                Alinhamento de campanha
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            17:00
+                        </div>
+
+                        <div class="timeline-line">
+                            <span></span>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Publicações
+                            </strong>
+
+                            <span>
+                                Conferir e programar conteúdos
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL — NOVO COMPROMISSO
+========================================================= -->
+
+<div
+    class="modal hidden"
+    id="agendaModal"
+    aria-hidden="true"
+>
+
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="modal-card agenda-modal-card">
+
+
+        <!-- =================================================
+             MODAL HEADER
+        ================================================== -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="agenda-kicker">
+                    NOVA ATIVIDADE
+                </div>
+
+                <h2 id="agendaModalTitle">
+                    Novo compromisso
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="fecharAgendaModal"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             FORM
+        ================================================== -->
+
+        <form
+            id="agendaForm"
+            autocomplete="off"
+        >
+
+
+            <div class="modal-body">
+
+
+                <input
+                    type="hidden"
+                    id="agendaId"
+                >
+
+
+                <!-- =================================================
+                     TÍTULO
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="agendaTitulo">
+                        Título *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="agendaTitulo"
+                        placeholder="Ex.: Criar Reels para cliente"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     CLIENTE
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="agendaCliente">
+                        Cliente
+                    </label>
+
+                    <input
+                        type="text"
+                        id="agendaCliente"
+                        placeholder="Nome do cliente ou empresa"
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     DATA + HORA
+                ================================================== -->
+
+                <div class="form-row">
+
+
+                    <div class="form-group">
+
+                        <label for="agendaData">
+                            Data *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="agendaData"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="agendaHora">
+                            Horário
+                        </label>
+
+                        <input
+                            type="time"
+                            id="agendaHora"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     TIPO
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="agendaTipo">
+                        Tipo de atividade
+                    </label>
+
+                    <select id="agendaTipo">
+
+                        <option value="post">
+                            Post
+                        </option>
+
+                        <option value="reels">
+                            Reels
+                        </option>
+
+                        <option value="stories">
+                            Stories
+                        </option>
+
+                        <option value="conteudo">
+                            Conteúdo
+                        </option>
+
+                        <option value="design">
+                            Design
+                        </option>
+
+                        <option value="trafego">
+                            Tráfego Pago
+                        </option>
+
+                        <option value="reuniao">
+                            Reunião
+                        </option>
+
+                        <option value="evento">
+                            Evento
+                        </option>
+
+                        <option value="cliente">
+                            Atendimento
+                        </option>
+
+                        <option value="outro">
+                            Outro
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- =================================================
+                     STATUS
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="agendaStatus">
+                        Status
+                    </label>
+
+                    <select id="agendaStatus">
+
+                        <option value="agendado">
+                            Agendado
+                        </option>
+
+                        <option value="pendente">
+                            Pendente
+                        </option>
+
+                        <option value="em_andamento">
+                            Em andamento
+                        </option>
+
+                        <option value="concluido">
+                            Concluído
+                        </option>
+
+                        <option value="cancelado">
+                            Cancelado
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- =================================================
+                     OBSERVAÇÕES
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="agendaObservacoes">
+                        Observações
+                    </label>
+
+                    <textarea
+                        id="agendaObservacoes"
+                        placeholder="Ex.: publicar às 19h, enviar aprovação, briefing..."
+                    ></textarea>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 MODAL FOOTER
+            ================================================== -->
+
+            <div class="modal-footer">
+
+
+                <button
+                    type="button"
+                    class="btn"
+                    id="cancelarAgendaBtn"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="salvarAgendaBtn"
+                >
+                    Salvar atividade
+                </button>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<script src="js/supabase.js"></script>
+
+<script src="js/app.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/agenda.js"></script>
+
+
+</body>
+
+</html>

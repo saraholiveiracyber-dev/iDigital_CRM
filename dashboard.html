@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Dashboard executivo do iDigital CRM Premium 2.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#050505"
+    >
+
+    <title>Dashboard | iDigital CRM Premium 2.0</title>
+
+    <!-- FONTE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- CSS DASHBOARD -->
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                iD
+            </div>
+
+            <div class="brand-text">
+                <strong>iDigital CRM</strong>
+                <small>Premium 2.0</small>
+            </div>
+
+        </div>
+
+
+        <nav
+            class="nav"
+            aria-label="Navegação principal"
+        >
+
+            <a
+                href="dashboard.html"
+                class="active"
+                aria-current="page"
+            >
+                <span class="ico">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a href="clientes.html">
+                <span class="ico">♙</span>
+                <span>Clientes &amp; Cobranças</span>
+            </a>
+
+
+            <a href="leads.html">
+                <span class="ico">◈</span>
+                <span>Leads &amp; Pipeline</span>
+            </a>
+
+
+            <a href="agenda.html">
+                <span class="ico">◷</span>
+                <span>Agenda</span>
+            </a>
+
+
+            <a href="configuracoes.html">
+                <span class="ico">⚙</span>
+                <span>Configurações</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="user-chip">
+
+                <div
+                    class="avatar"
+                    id="userAvatar"
+                    aria-hidden="true"
+                >
+                    U
+                </div>
+
+                <div class="user-info">
+
+                    <strong id="userName">
+                        Usuário
+                    </strong>
+
+                    <span id="userEmail">
+                        carregando...
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn btn-danger"
+                id="logoutBtn"
+            >
+                Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         CONTEÚDO PRINCIPAL
+    ====================================================== -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="btn menu-btn"
+                    id="menuBtn"
+                    aria-label="Abrir menu"
+                    aria-controls="sidebar"
+                    aria-expanded="false"
+                >
+                    ☰
+                </button>
+
+            </div>
+
+            <div
+                class="dashboard-date"
+                id="todayText"
+            ></div>
+
+        </header>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+        <div class="page dashboard-page">
+
+
+            <!-- =================================================
+                 SAUDAÇÃO
+            ================================================== -->
+            <section class="dashboard-greeting">
+
+                <div class="greeting-content">
+
+                    <span class="dashboard-kicker">
+                        IDIGITAL CRM • DASHBOARD
+                    </span>
+
+                    <h1>
+                        Olá
+                        <span id="dashboardUserName">
+                            Sarah Oliveira
+                        </span>
+                    </h1>
+
+                    <p id="dashboardGreetingText">
+                        Aqui está o resumo da sua operação.
+                    </p>
+
+                </div>
+
+
+                <div class="hero-status">
+
+                    <div class="status-dot"></div>
+
+                    <div>
+
+                        <span>PAINEL ATIVO</span>
+
+                        <strong>
+                            Operação em acompanhamento
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DESTAQUE FINANCEIRO
+            ================================================== -->
+            <section class="financial-highlight">
+
+                <div class="financial-highlight-main">
+
+                    <div class="financial-icon">
+                        R$
+                    </div>
+
+                    <div>
+
+                        <span class="metric-label">
+                            RECEITA RECEBIDA
+                        </span>
+
+                        <strong
+                            class="financial-total"
+                            id="mReceita"
+                        >
+                            R$ 0,00
+                        </strong>
+
+                        <p>
+                            Entradas recebidas + vendas integradas
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="financial-highlight-side">
+
+                    <div>
+
+                        <span>
+                            A RECEBER
+                        </span>
+
+                        <strong id="mReceber">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            VENDAS KIWIFY
+                        </span>
+
+                        <strong id="mKiwify">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 INDICADORES
+            ================================================== -->
+            <section class="section-heading">
+
+                <div>
+
+                    <span class="dashboard-kicker">
+                        VISÃO DO NEGÓCIO
+                    </span>
+
+                    <h2>
+                        Indicadores principais
+                    </h2>
+
+                </div>
+
+                <span class="section-description">
+                    Dados consolidados do CRM
+                </span>
+
+            </section>
+
+
+            <section class="metrics-grid">
+
+
+                <article class="executive-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol">
+                            #
+                        </div>
+
+                        <span class="metric-label">
+                            TOTAL DE PEDIDOS
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value"
+                        id="mPedidos"
+                    >
+                        0
+                    </strong>
+
+                    <span class="metric-description">
+                        Pedidos registrados
+                    </span>
+
+                </article>
+
+
+                <article class="executive-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol">
+                            C
+                        </div>
+
+                        <span class="metric-label">
+                            CLIENTES
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value"
+                        id="mClientes"
+                    >
+                        0
+                    </strong>
+
+                    <span class="metric-description">
+                        Clientes ativos
+                    </span>
+
+                </article>
+
+
+                <article class="executive-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol">
+                            L
+                        </div>
+
+                        <span class="metric-label">
+                            LEADS
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value"
+                        id="mLeads"
+                    >
+                        0
+                    </strong>
+
+                    <span class="metric-description">
+                        Oportunidades
+                    </span>
+
+                </article>
+
+
+                <article class="executive-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol">
+                            O
+                        </div>
+
+                        <span class="metric-label">
+                            ORÇAMENTOS
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value"
+                        id="mOrcamentos"
+                    >
+                        0
+                    </strong>
+
+                    <span class="metric-description">
+                        Solicitações recebidas
+                    </span>
+
+                </article>
+
+            </section>
+
+
+            <!-- =================================================
+                 PERFORMANCE
+            ================================================== -->
+            <section class="performance-section">
+
+                <div class="performance-header">
+
+                    <div>
+
+                        <span class="dashboard-kicker">
+                            PERFORMANCE PREMIUM
+                        </span>
+
+                        <h2>
+                            O negócio está evoluindo?
+                        </h2>
+
+                        <p>
+                            Acompanhe os principais números da operação.
+                        </p>
+
+                    </div>
+
+
+                    <div class="performance-badge">
+
+                        <span>
+                            PERFORMANCE
+                        </span>
+
+                        <strong>
+                            EM FOCO
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="performance-grid">
+
+
+                    <article class="performance-card">
+
+                        <div class="performance-card-top">
+
+                            <span>
+                                RECEITA
+                            </span>
+
+                            <span class="performance-symbol">
+                                ↗
+                            </span>
+
+                        </div>
+
+                        <strong id="performanceReceita">
+                            R$ 0,00
+                        </strong>
+
+                        <p>
+                            Receita recebida
+                        </p>
+
+                    </article>
+
+
+                    <article class="performance-card">
+
+                        <div class="performance-card-top">
+
+                            <span>
+                                VENDAS
+                            </span>
+
+                            <span class="performance-symbol">
+                                ◇
+                            </span>
+
+                        </div>
+
+                        <strong id="performanceVendas">
+                            0
+                        </strong>
+
+                        <p>
+                            Pedidos pagos
+                        </p>
+
+                    </article>
+
+
+                    <article class="performance-card">
+
+                        <div class="performance-card-top">
+
+                            <span>
+                                CLIENTES
+                            </span>
+
+                            <span class="performance-symbol">
+                                C
+                            </span>
+
+                        </div>
+
+                        <strong id="performanceClientes">
+                            0
+                        </strong>
+
+                        <p>
+                            Base ativa
+                        </p>
+
+                    </article>
+
+
+                    <article class="performance-card">
+
+                        <div class="performance-card-top">
+
+                            <span>
+                                OPORTUNIDADES
+                            </span>
+
+                            <span class="performance-symbol">
+                                ◎
+                            </span>
+
+                        </div>
+
+                        <strong id="performanceLeads">
+                            0
+                        </strong>
+
+                        <p>
+                            Leads no pipeline
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 EVOLUÇÃO DA RECEITA
+            ================================================== -->
+            <section class="revenue-section">
+
+                <div class="revenue-header">
+
+                    <div>
+
+                        <span class="dashboard-kicker">
+                            DESEMPENHO FINANCEIRO
+                        </span>
+
+                        <h2>
+                            Evolução da receita
+                        </h2>
+
+                        <p>
+                            Entradas recebidas nos últimos seis meses.
+                        </p>
+
+                    </div>
+
+
+                    <div class="revenue-current">
+
+                        <span>
+                            RECEITA ACUMULADA
+                        </span>
+
+                        <strong id="chartTotalReceita">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="revenueChart"></canvas>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CONTROLE FINANCEIRO
+            ================================================== -->
+            <section class="cashflow-section">
+
+                <div class="section-heading cashflow-heading">
+
+                    <div>
+
+                        <span class="dashboard-kicker">
+                            CONTROLE FINANCEIRO
+                        </span>
+
+                        <h2>
+                            Entradas e despesas
+                        </h2>
+
+                    </div>
+
+                    <span class="section-description">
+                        Lançamentos manuais
+                    </span>
+
+                </div>
+
+
+                <div class="cashflow-grid">
+
+
+                    <article class="cashflow-card cashflow-entry">
+
+                        <div class="cashflow-icon">
+                            ↑
+                        </div>
+
+                        <div>
+
+                            <span>
+                                ENTRADAS
+                            </span>
+
+                            <strong id="dashboardEntradas">
+                                R$ 0,00
+                            </strong>
+
+                            <small>
+                                Valores recebidos
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="cashflow-card cashflow-expense">
+
+                        <div class="cashflow-icon">
+                            ↓
+                        </div>
+
+                        <div>
+
+                            <span>
+                                DESPESAS
+                            </span>
+
+                            <strong id="dashboardSaidas">
+                                R$ 0,00
+                            </strong>
+
+                            <small>
+                                Despesas pagas
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="cashflow-card cashflow-balance">
+
+                        <div class="cashflow-icon">
+                            =
+                        </div>
+
+                        <div>
+
+                            <span>
+                                SALDO
+                            </span>
+
+                            <strong id="dashboardSaldo">
+                                R$ 0,00
+                            </strong>
+
+                            <small>
+                                Entradas menos despesas
+                            </small>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- NOVO LANÇAMENTO -->
+                <div class="finance-manual">
+
+                    <div class="finance-manual-header">
+
+                        <div>
+
+                            <span class="dashboard-kicker">
+                                NOVO LANÇAMENTO
+                            </span>
+
+                            <h3>
+                                Adicionar entrada ou despesa
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        id="dashboardFinanceForm"
+                        class="finance-form"
+                    >
+
+
+                        <div class="finance-field">
+
+                            <label for="financeTipo">
+                                Tipo
+                            </label>
+
+                            <select
+                                id="financeTipo"
+                                name="tipo"
+                                required
+                            >
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="entrada">
+                                    Entrada
+                                </option>
+
+                                <option value="saida">
+                                    Despesa
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="finance-field">
+
+                            <label for="financeDescricao">
+                                Descrição
+                            </label>
+
+                            <input
+                                type="text"
+                                id="financeDescricao"
+                                name="descricao"
+                                placeholder="Ex.: Pagamento de cliente"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="finance-field">
+
+                            <label for="financeValor">
+                                Valor
+                            </label>
+
+                            <input
+                                type="text"
+                                id="financeValor"
+                                name="valor"
+                                placeholder="R$ 0,00"
+                                inputmode="decimal"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="finance-field">
+
+                            <label for="financeData">
+                                Data
+                            </label>
+
+                            <input
+                                type="date"
+                                id="financeData"
+                                name="data"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="finance-field">
+
+                            <label for="financeCategoria">
+                                Categoria
+                            </label>
+
+                            <select
+                                id="financeCategoria"
+                                name="categoria"
+                            >
+
+                                <option value="vendas">
+                                    Vendas
+                                </option>
+
+                                <option value="servicos">
+                                    Serviços
+                                </option>
+
+                                <option value="marketing">
+                                    Marketing
+                                </option>
+
+                                <option value="software">
+                                    Software
+                                </option>
+
+                                <option value="equipamentos">
+                                    Equipamentos
+                                </option>
+
+                                <option value="pessoal">
+                                    Pessoal
+                                </option>
+
+                                <option value="outros">
+                                    Outros
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="finance-field">
+
+                            <label for="financeStatus">
+                                Status
+                            </label>
+
+                            <select
+                                id="financeStatus"
+                                name="status"
+                                required
+                            >
+
+                                <option value="pago">
+                                    Pago / Recebido
+                                </option>
+
+                                <option value="pendente">
+                                    Pendente
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="finance-field finance-field-button">
+
+                            <label>
+                                &nbsp;
+                            </label>
+
+                            <button
+                                type="submit"
+                                class="finance-add-button"
+                                id="dashboardFinanceSubmit"
+                            >
+                                + Adicionar lançamento
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <!-- RESUMO -->
+                <div class="cashflow-summary">
+
+                    <div>
+
+                        <span>
+                            ENTRADAS
+                        </span>
+
+                        <strong id="summaryEntradas">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            DESPESAS
+                        </span>
+
+                        <strong id="summarySaidas">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            SALDO OPERACIONAL
+                        </span>
+
+                        <strong id="summarySaldo">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HISTÓRICO -->
+                <div class="finance-list">
+
+                    <div class="finance-list-header">
+
+                        <div>
+
+                            <span class="dashboard-kicker">
+                                HISTÓRICO
+                            </span>
+
+                            <h3>
+                                Últimos lançamentos
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="finance-list-table"
+                        id="dashboardFinanceList"
+                    >
+
+                        <div class="finance-empty">
+                            Nenhum lançamento encontrado.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 COMERCIAL
+            ================================================== -->
+            <section class="commercial-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="dashboard-kicker">
+                            MOVIMENTO COMERCIAL
+                        </span>
+
+                        <h2>
+                            Oportunidades e vendas
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="commercial-grid">
+
+
+                    <article class="commercial-card">
+
+                        <div class="commercial-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <span>
+                                ORÇAMENTOS APROVADOS
+                            </span>
+
+                            <strong id="dashOrcamentosAprovados">
+                                0
+                            </strong>
+
+                            <small>
+                                Negócios convertidos
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="commercial-card">
+
+                        <div class="commercial-icon">
+                            ◌
+                        </div>
+
+                        <div>
+
+                            <span>
+                                EM ANÁLISE
+                            </span>
+
+                            <strong id="dashOrcamentosAnalise">
+                                0
+                            </strong>
+
+                            <small>
+                                Aguardando decisão
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="commercial-card">
+
+                        <div class="commercial-icon">
+                            +
+                        </div>
+
+                        <div>
+
+                            <span>
+                                NOVOS ORÇAMENTOS
+                            </span>
+
+                            <strong id="dashOrcamentosNovos">
+                                0
+                            </strong>
+
+                            <small>
+                                Novas oportunidades
+                            </small>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- OVERLAY MOBILE -->
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    aria-hidden="true"
+></div>
+
+
+<!-- =====================================================
+     SCRIPTS
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/app.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

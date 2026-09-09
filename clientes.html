@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Gestão premium de clientes, contratos, produtos e cobranças — iDigital CRM Premium 2.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#080808"
+    >
+
+    <title>Clientes & Cobranças | iDigital CRM Premium 2.0</title>
+
+    <!-- GOOGLE FONT -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/clientes.css"
+    >
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         OVERLAY SIDEBAR
+    ====================================================== -->
+
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+    ></div>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                iD
+            </div>
+
+            <div>
+                <strong>iDigital CRM</strong>
+
+                <small class="muted">
+                    Premium 2.0
+                </small>
+            </div>
+
+        </div>
+
+
+        <nav
+            class="nav"
+            aria-label="Navegação principal"
+        >
+
+            <a href="dashboard.html">
+                <span class="ico">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="clientes.html"
+                class="active"
+            >
+                <span class="ico">♙</span>
+                <span>Clientes & Cobranças</span>
+            </a>
+
+            <a href="leads.html">
+                <span class="ico">◎</span>
+                <span>Leads & Pipeline</span>
+            </a>
+
+            <a href="agenda.html">
+                <span class="ico">▣</span>
+                <span>Agenda</span>
+            </a>
+
+            <a href="configuracoes.html">
+                <span class="ico">⚙</span>
+                <span>Configurações</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="user-chip">
+
+                <div
+                    class="avatar"
+                    id="userAvatar"
+                >
+                    U
+                </div>
+
+                <div>
+
+                    <strong id="userName">
+                        Usuário
+                    </strong>
+
+                    <div
+                        class="muted"
+                        id="userEmail"
+                    >
+                        carregando...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn btn-danger"
+                id="logoutBtn"
+            >
+                Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="btn menu-btn"
+                    id="menuBtn"
+                    aria-label="Abrir menu"
+                >
+                    ☰
+                </button>
+
+                <div>
+
+                    <span class="topbar-kicker">
+                        GESTÃO COMERCIAL
+                    </span>
+
+                    <strong>
+                        Clientes & Cobranças
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="muted"
+                id="todayText"
+            ></div>
+
+        </header>
+
+
+        <!-- =================================================
+             CONTEÚDO
+        ================================================== -->
+
+        <div class="page clientes-page">
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="clientes-hero">
+
+                <div class="clientes-hero-content">
+
+                    <span class="clientes-kicker">
+                        iDIGITAL CRM PREMIUM 2.0
+                    </span>
+
+                    <h1>
+                        Clientes
+                        <span>& Cobranças</span>
+                    </h1>
+
+                    <p>
+                        Controle clientes, contratos, produtos,
+                        parcelas, recebimentos e valores a receber
+                        em um único painel executivo.
+                    </p>
+
+                </div>
+
+
+                <div class="clientes-actions">
+
+                    <div class="hero-status">
+
+                        <span class="status-dot"></span>
+
+                        <div>
+
+                            <small>
+                                SISTEMA
+                            </small>
+
+                            <strong>
+                                Operacional
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BOTÃO NOVO CLIENTE -->
+
+                    <button
+                        type="button"
+                        class="btn clients-primary-button"
+                        id="novoClienteBtn"
+                    >
+                        <span>＋</span>
+                        Novo cliente
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 MÉTRICAS
+            ================================================== -->
+
+            <section
+                class="clients-metrics-grid"
+                aria-label="Resumo financeiro"
+            >
+
+                <article class="client-metric-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol">
+                            CL
+                        </div>
+
+                        <span class="metric-label">
+                            Clientes
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value"
+                        id="totalClientes"
+                    >
+                        0
+                    </strong>
+
+                    <span class="metric-description">
+                        Clientes cadastrados
+                    </span>
+
+                </article>
+
+
+                <article class="client-metric-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol">
+                            R$
+                        </div>
+
+                        <span class="metric-label">
+                            Contratos
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value gold"
+                        id="valorTotalClientes"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <span class="metric-description">
+                        Valor total contratado
+                    </span>
+
+                </article>
+
+
+                <article class="client-metric-card">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol success">
+                            ✓
+                        </div>
+
+                        <span class="metric-label">
+                            Recebido
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value success-text"
+                        id="totalRecebido"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <span class="metric-description">
+                        Pagamentos confirmados
+                    </span>
+
+                </article>
+
+
+                <article class="client-metric-card highlight">
+
+                    <div class="metric-top">
+
+                        <div class="metric-symbol pending">
+                            $
+                        </div>
+
+                        <span class="metric-label">
+                            A receber
+                        </span>
+
+                    </div>
+
+                    <strong
+                        class="metric-value gold"
+                        id="totalAReceber"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <span class="metric-description">
+                        Valores em aberto + vencidos
+                    </span>
+
+                </article>
+
+            </section>
+
+
+            <!-- =================================================
+                 MENSAGEM
+            ================================================== -->
+
+            <div
+                class="system-message"
+                id="systemMessage"
+                role="status"
+                aria-live="polite"
+            >
+
+                <span>●</span>
+
+                <span>
+                    Carregando informações do CRM...
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 FILTROS
+            ================================================== -->
+
+            <section class="clients-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="clients-kicker">
+                            CONSULTA
+                        </span>
+
+                        <h2>
+                            Buscar clientes
+                        </h2>
+
+                    </div>
+
+                    <span
+                        class="result-count"
+                        id="clientesResultCount"
+                    >
+                        0 clientes
+                    </span>
+
+                </div>
+
+
+                <div class="clients-filters">
+
+                    <div class="form-group search-field">
+
+                        <label for="buscaCliente">
+                            Buscar
+                        </label>
+
+                        <input
+                            type="search"
+                            id="buscaCliente"
+                            placeholder="Nome, CPF, CNPJ, telefone ou e-mail..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="filtroTipo">
+                            Tipo
+                        </label>
+
+                        <select id="filtroTipo">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option value="PF">
+                                Pessoa Física
+                            </option>
+
+                            <option value="PJ">
+                                Pessoa Jurídica
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="filtroStatus">
+                            Status
+                        </label>
+
+                        <select id="filtroStatus">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option value="ativo">
+                                Ativos
+                            </option>
+
+                            <option value="inativo">
+                                Inativos
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="filtroCobranca">
+                            Cobrança
+                        </label>
+
+                        <select id="filtroCobranca">
+
+                            <option value="">
+                                Todas
+                            </option>
+
+                            <option value="pago">
+                                Pagos
+                            </option>
+
+                            <option value="aberto">
+                                Em aberto
+                            </option>
+
+                            <option value="vencido">
+                                Vencidos
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="btn filter-clear"
+                        id="clearClienteFilters"
+                    >
+                        Limpar filtros
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CLIENTES
+            ================================================== -->
+
+            <section class="clients-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="clients-kicker">
+                            BASE DE CLIENTES
+                        </span>
+
+                        <h2>
+                            Clientes cadastrados
+                        </h2>
+
+                        <p class="panel-description">
+                            Contratos, produtos, parcelas e situação
+                            financeira de cada cliente.
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="result-count"
+                        id="clientesTotalTabela"
+                    >
+                        0 registros
+                    </span>
+
+                </div>
+
+
+                <div class="clients-table-wrapper">
+
+                    <table class="clients-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Cliente</th>
+                                <th>Produto / Serviço</th>
+                                <th>Parcelamento</th>
+                                <th>Contrato</th>
+                                <th>Recebido</th>
+                                <th>A receber</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="clientesBody"></tbody>
+
+                    </table>
+
+
+                    <div
+                        class="table-empty hidden"
+                        id="clientesEmpty"
+                    >
+
+                        <div class="empty-icon">
+                            CL
+                        </div>
+
+                        <strong>
+                            Nenhum cliente encontrado
+                        </strong>
+
+                        <span>
+                            Cadastre seu primeiro cliente ou altere
+                            os filtros utilizados na pesquisa.
+                        </span>
+
+                        <button
+                            type="button"
+                            class="btn clients-primary-button"
+                            id="emptyNewClientBtn"
+                        >
+                            ＋ Cadastrar cliente
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+     CONTROLE FINANCEIRO
+================================================== -->
+
+<section class="clients-panel financial-control-panel">
+
+    <div class="panel-header financial-panel-header">
+
+        <div>
+
+            <span class="clients-kicker">
+                CONTROLE FINANCEIRO
+            </span>
+
+            <h2>
+                Competências e cobranças
+            </h2>
+
+            <p class="panel-description">
+                Acompanhe parcelas, recebimentos e valores
+                em aberto por período.
+            </p>
+
+        </div>
+
+        <div class="financial-header-actions">
+
+            <button
+                type="button"
+                class="financial-nav-btn"
+                id="mesAnteriorBtn"
+                title="Mês anterior"
+            >
+                ‹
+            </button>
+
+            <div class="financial-current-month">
+
+                <span class="month-label">
+                    COMPETÊNCIA
+                </span>
+
+                <strong id="competenciaAtual">
+                    Setembro de 2026
+                </strong>
+
+            </div>
+
+            <button
+                type="button"
+                class="financial-nav-btn"
+                id="proximoMesBtn"
+                title="Próximo mês"
+            >
+                ›
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RESUMO DA COMPETÊNCIA
+    ================================================== -->
+
+    <div class="financial-summary-grid">
+
+
+        <!-- RECEBIDO -->
+
+        <article class="financial-summary-card received">
+
+            <div class="financial-summary-top">
+
+                <div class="financial-summary-icon">
+                    ✓
+                </div>
+
+                <span>
+                    RECEBIDO
+                </span>
+
+            </div>
+
+            <strong
+                id="competenciaRecebido"
+                class="financial-summary-value success-text"
+            >
+                R$ 0,00
+            </strong>
+
+            <small>
+                Pagamentos confirmados
+            </small>
+
+        </article>
+
+
+        <!-- EM ABERTO -->
+
+        <article class="financial-summary-card open">
+
+            <div class="financial-summary-top">
+
+                <div class="financial-summary-icon">
+                    $
+                </div>
+
+                <span>
+                    EM ABERTO
+                </span>
+
+            </div>
+
+            <strong
+                id="competenciaAberto"
+                class="financial-summary-value gold"
+            >
+                R$ 0,00
+            </strong>
+
+            <small>
+                Cobranças pendentes
+            </small>
+
+        </article>
+
+
+        <!-- VENCIDO -->
+
+        <article class="financial-summary-card overdue">
+
+            <div class="financial-summary-top">
+
+                <div class="financial-summary-icon">
+                    !
+                </div>
+
+                <span>
+                    VENCIDO
+                </span>
+
+            </div>
+
+            <strong
+                id="competenciaVencido"
+                class="financial-summary-value danger-text"
+            >
+                R$ 0,00
+            </strong>
+
+            <small>
+                Valores em atraso
+            </small>
+
+        </article>
+
+
+        <!-- TOTAL -->
+
+        <article class="financial-summary-card total">
+
+            <div class="financial-summary-top">
+
+                <div class="financial-summary-icon">
+                    R$
+                </div>
+
+                <span>
+                    TOTAL
+                </span>
+
+            </div>
+
+            <strong
+                id="competenciaTotal"
+                class="financial-summary-value"
+            >
+                R$ 0,00
+            </strong>
+
+            <small>
+                Total da competência
+            </small>
+
+        </article>
+
+    </div>
+
+
+    <!-- =================================================
+         PROGRESSO FINANCEIRO
+    ================================================== -->
+
+    <div class="financial-progress-card">
+
+        <div class="financial-progress-header">
+
+            <div>
+
+                <span class="financial-progress-label">
+                    DESEMPENHO DA COMPETÊNCIA
+                </span>
+
+                <strong id="competenciaPercentual">
+                    0% recebido
+                </strong>
+
+            </div>
+
+            <span id="competenciaProgressoValor">
+                R$ 0,00 de R$ 0,00
+            </span>
+
+        </div>
+
+
+        <div class="financial-progress">
+
+            <div
+                class="financial-progress-bar"
+                id="competenciaProgressBar"
+                style="width: 0%;"
+            ></div>
+
+        </div>
+
+
+        <div class="financial-progress-footer">
+
+            <span>
+                Recebido
+            </span>
+
+            <span>
+                Total previsto
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         LISTA DE COBRANÇAS
+    ================================================== -->
+
+    <div class="financial-charges">
+
+        <div class="financial-charges-header">
+
+            <div>
+
+                <span class="clients-kicker">
+                    LANÇAMENTOS
+                </span>
+
+                <h3>
+                    Cobranças da competência
+                </h3>
+
+            </div>
+
+            <span
+                class="result-count"
+                id="competenciaQuantidade"
+            >
+                0 cobranças
+            </span>
+
+        </div>
+
+
+        <!-- FILTROS DA COMPETÊNCIA -->
+
+        <div class="financial-filters">
+
+            <button
+                type="button"
+                class="financial-filter active"
+                data-financial-filter="todas"
+            >
+                Todas
+            </button>
+
+            <button
+                type="button"
+                class="financial-filter"
+                data-financial-filter="pago"
+            >
+                Pagas
+            </button>
+
+            <button
+                type="button"
+                class="financial-filter"
+                data-financial-filter="pendente"
+            >
+                Em aberto
+            </button>
+
+            <button
+                type="button"
+                class="financial-filter"
+                data-financial-filter="vencido"
+            >
+                Vencidas
+            </button>
+
+        </div>
+
+
+        <!-- TABELA -->
+
+        <div class="financial-table-wrapper">
+
+            <table class="financial-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Cliente
+                        </th>
+
+                        <th>
+                            Descrição
+                        </th>
+
+                        <th>
+                            Parcela
+                        </th>
+
+                        <th>
+                            Vencimento
+                        </th>
+
+                        <th>
+                            Valor
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Ações
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="competenciaCobrancasBody">
+
+                    <!--
+                        O clientes.js preencherá
+                        as cobranças aqui.
+                    -->
+
+                </tbody>
+
+            </table>
+
+
+            <!-- ESTADO VAZIO -->
+
+            <div
+                class="financial-empty"
+                id="competenciaEmpty"
+            >
+
+                <div class="financial-empty-icon">
+                    ✓
+                </div>
+
+                <strong>
+                    Nenhuma cobrança nesta competência
+                </strong>
+
+                <span>
+                    As parcelas e cobranças cadastradas
+                    aparecerão aqui automaticamente.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RODAPÉ DA COMPETÊNCIA
+    ================================================== -->
+
+    <div class="financial-control-footer">
+
+        <div>
+
+            <span>
+                Competência selecionada
+            </span>
+
+            <strong id="competenciaFooter">
+                Setembro de 2026
+            </strong>
+
+        </div>
+
+
+        <div class="financial-footer-stats">
+
+            <div>
+
+                <span>
+                    Parcelas
+                </span>
+
+                <strong id="competenciaParcelas">
+                    0
+                </strong>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Pagas
+                </span>
+
+                <strong
+                    id="competenciaPagas"
+                    class="success-text"
+                >
+                    0
+                </strong>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Pendentes
+                </span>
+
+                <strong
+                    id="competenciaPendentes"
+                    class="gold"
+                >
+                    0
+                </strong>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Vencidas
+                </span>
+
+                <strong
+                    id="competenciaVencidas"
+                    class="danger-text"
+                >
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- =========================================================
+     MODAL CLIENTE
+========================================================== -->
+
+<div
+    class="modal hidden"
+    id="clienteModal"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-overlay"
+        data-close-modal="cliente"
+    ></div>
+
+
+    <div
+        class="modal-card modal-large"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="clienteModalTitle"
+    >
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="clients-kicker">
+                    CADASTRO
+                </span>
+
+                <h2 id="clienteModalTitle">
+                    Novo cliente
+                </h2>
+
+                <p>
+                    Cadastre o cliente e configure o produto,
+                    contrato e parcelamento.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="fecharClienteModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="clienteForm"
+            autocomplete="off"
+        >
+
+            <div class="modal-body">
+
+                <div class="form-section-title">
+                    01 — Dados do cliente
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="tipo">
+                            Tipo <span>*</span>
+                        </label>
+
+                        <select
+                            id="tipo"
+                            name="tipo"
+                            required
+                        >
+
+                            <option value="PF">
+                                Pessoa Física
+                            </option>
+
+                            <option value="PJ">
+                                Pessoa Jurídica
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="statusCliente">
+                            Status
+                        </label>
+
+                        <select
+                            id="statusCliente"
+                            name="status"
+                        >
+
+                            <option value="ativo">
+                                Ativo
+                            </option>
+
+                            <option value="inativo">
+                                Inativo
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="nome">
+                            Nome / Razão Social <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nome"
+                            name="nome"
+                            placeholder="Nome completo ou razão social"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="documento">
+                            CPF / CNPJ
+                        </label>
+
+                        <input
+                            type="text"
+                            id="documento"
+                            name="documento"
+                            placeholder="CPF ou CNPJ"
+                            inputmode="numeric"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="emailCliente">
+                            E-mail
+                        </label>
+
+                        <input
+                            type="email"
+                            id="emailCliente"
+                            name="email"
+                            placeholder="cliente@email.com"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="telefone">
+                            Telefone
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="telefone"
+                            name="telefone"
+                            placeholder="(61) 99999-9999"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="endereco">
+                        Endereço
+                    </label>
+
+                    <input
+                        type="text"
+                        id="endereco"
+                        name="endereco"
+                        placeholder="Endereço completo"
+                    >
+
+                </div>
+
+
+                <div class="form-section-title">
+                    02 — Produto / contrato
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="produtoServico">
+                            Produto / Serviço <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="produtoServico"
+                            name="produto_servico"
+                            placeholder="Ex.: Social Media, Designer, Marketing..."
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="periodicidadeCliente">
+                            Periodicidade
+                        </label>
+
+                        <select
+                            id="periodicidadeCliente"
+                            name="periodicidade"
+                        >
+
+                            <option value="mensal">
+                                Mensal
+                            </option>
+
+                            <option value="unica">
+                                Única / Avulso
+                            </option>
+
+                            <option value="semanal">
+                                Semanal
+                            </option>
+
+                            <option value="anual">
+                                Anual
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="valorContrato">
+                            Valor total <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="valorContrato"
+                            name="valor_total"
+                            placeholder="R$ 0,00"
+                            inputmode="decimal"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="quantidadeParcelas">
+                            Quantidade de parcelas
+                        </label>
+
+                        <input
+                            type="number"
+                            id="quantidadeParcelas"
+                            name="quantidade_parcelas"
+                            min="1"
+                            step="1"
+                            value="1"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="valorParcela">
+                            Valor por parcela
+                        </label>
+
+                        <input
+                            type="text"
+                            id="valorParcela"
+                            readonly
+                            value="R$ 0,00"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="primeiroVencimento">
+                            Primeiro vencimento
+                        </label>
+
+                        <input
+                            type="date"
+                            id="primeiroVencimento"
+                            name="primeiro_vencimento"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="preview-box"
+                    id="parcelamentoPreview"
+                ></div>
+
+
+                <label
+                    class="check-card"
+                    id="gerarCobrancasWrap"
+                >
+
+                    <input
+                        type="checkbox"
+                        id="gerarCobrancas"
+                        checked
+                    >
+
+                    <span>
+
+                        <strong>
+                            Gerar cobranças automaticamente
+                        </strong>
+
+                        <small>
+                            Cria as parcelas no controle financeiro
+                            ao cadastrar o cliente.
+                        </small>
+
+                    </span>
+
+                </label>
+
+
+                <div class="form-section-title">
+                    03 — Observações
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="observacoes">
+                        Observações
+                    </label>
+
+                    <textarea
+                        id="observacoes"
+                        name="observacoes"
+                        placeholder="Informações adicionais sobre o cliente, contrato ou cobrança..."
+                    ></textarea>
+
+                </div>
+
+
+                <input
+                    type="hidden"
+                    id="clienteId"
+                    name="id"
+                >
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn secondary"
+                    id="cancelarCliente"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn clients-primary-button"
+                    id="salvarClienteBtn"
+                >
+                    Salvar cliente
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL DETALHES
+========================================================== -->
+
+<div
+    class="modal hidden"
+    id="clienteDetalhesModal"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-overlay"
+        data-close-modal="detalhes"
+    ></div>
+
+
+    <div
+        class="modal-card modal-large"
+        role="dialog"
+        aria-modal="true"
+    >
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="clients-kicker">
+                    CLIENTE
+                </span>
+
+                <h2 id="detalhesClienteNome">
+                    Detalhes do cliente
+                </h2>
+
+                <p>
+                    Contratos, parcelas e histórico financeiro.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="fecharDetalhesModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span>Valor contratado</span>
+                    <strong id="detalhesValorCliente">
+                        R$ 0,00
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Recebido</span>
+                    <strong
+                        id="detalhesRecebido"
+                        class="success-text"
+                    >
+                        R$ 0,00
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>A receber</span>
+                    <strong id="detalhesAReceber">
+                        R$ 0,00
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Vencido</span>
+                    <strong
+                        id="detalhesVencido"
+                        class="danger-text"
+                    >
+                        R$ 0,00
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="form-section-title">
+                Dados do cliente
+            </div>
+
+
+            <div
+                class="details-panel"
+                id="detalhesDadosCliente"
+            ></div>
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="clients-kicker">
+                        FINANCEIRO
+                    </span>
+
+                    <h2>
+                        Parcelas e cobranças
+                    </h2>
+
+                </div>
+
+                <span
+                    class="section-description"
+                    id="detalhesParcelasResumo"
+                >
+                    0 parcelas
+                </span>
+
+            </div>
+
+
+            <div
+                class="details-panel"
+                id="detalhesCobrancas"
+            ></div>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn secondary"
+                id="detalhesNovaCobranca"
+            >
+                ＋ Nova cobrança
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL COBRANÇA
+========================================================== -->
+<div
+    class="modal hidden"
+    id="cobrancaModal"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-overlay"
+        data-close-modal="cobranca"
+    ></div>
+
+
+    <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+    >
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="clients-kicker">
+                    COBRANÇA
+                </span>
+
+                <h2>
+                    Nova cobrança
+                </h2>
+
+                <p>
+                    Crie uma nova cobrança para o cliente.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="fecharCobrancaModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="cobrancaForm"
+            autocomplete="off"
+        >
+
+            <div class="modal-body">
+
+                <div class="form-section-title">
+                    Dados da cobrança
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="cobCliente">
+                        Cliente <span>*</span>
+                    </label>
+
+                    <select
+                        id="cobCliente"
+                        name="cliente_id"
+                        required
+                    >
+
+                        <option value="">
+                            Selecione o cliente
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="cobDescricao">
+                        Descrição <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cobDescricao"
+                        name="descricao"
+                        placeholder="Ex.: Parcela mensal"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="cobValor">
+                            Valor
+                        </label>
+
+                        <input
+                            type="text"
+                            id="cobValor"
+                            name="valor"
+                            placeholder="R$ 0,00"
+                            inputmode="decimal"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="cobQuantidade">
+                            Quantidade
+                        </label>
+
+                        <input
+                            type="number"
+                            id="cobQuantidade"
+                            name="quantidade"
+                            min="1"
+                            value="1"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="cobPeriodicidade">
+                            Periodicidade
+                        </label>
+
+                        <select
+                            id="cobPeriodicidade"
+                            name="periodicidade"
+                        >
+
+                            <option value="unica">
+                                Única
+                            </option>
+
+                            <option value="mensal">
+                                Mensal
+                            </option>
+
+                            <option value="semanal">
+                                Semanal
+                            </option>
+
+                            <option value="anual">
+                                Anual
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="cobVencimento">
+                            Primeiro vencimento
+                        </label>
+
+                        <input
+                            type="date"
+                            id="cobVencimento"
+                            name="vencimento"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="preview-box"
+                    id="cobPreview"
+                ></div>
+
+
+                <div class="form-group">
+
+                    <label for="cobObservacoes">
+                        Observações
+                    </label>
+
+                    <textarea
+                        id="cobObservacoes"
+                        name="observacoes"
+                        placeholder="Observações da cobrança..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn secondary"
+                    id="cancelarCobranca"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn clients-primary-button"
+                    id="salvarCobrancaBtn"
+                >
+                    Salvar cobrança
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+    class="lead-toast"
+    id="toast"
+    role="alert"
+    aria-live="assertive"
+></div>
+
+
+<!-- =========================================================
+     SCRIPTS
+========================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/app.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/clientes.js"></script>
+
+</body>
+</html>

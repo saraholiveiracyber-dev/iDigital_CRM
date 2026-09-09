@@ -1,0 +1,1372 @@
+/* =========================================================
+   iDIGITAL CRM PREMIUM 2.0
+   CONFIGURAÇÕES
+   BLACK + GOLD
+   ========================================================= */
+
+
+/* =========================================================
+   01. VARIÁVEIS
+   ========================================================= */
+
+:root {
+
+    --crm-black: #050505;
+    --crm-black-2: #080808;
+    --crm-black-3: #0d0d0d;
+    --crm-black-4: #121212;
+
+    --crm-gold: #c9a85d;
+    --crm-gold-light: #ead49a;
+    --crm-gold-dark: #8d6d32;
+
+    --crm-white: #f5f2ea;
+    --crm-text: #ded9cd;
+    --crm-muted: #858078;
+
+    --crm-line: rgba(201, 168, 93, .15);
+    --crm-line-strong: rgba(201, 168, 93, .28);
+    --crm-gold-soft: rgba(201, 168, 93, .06);
+
+    --success: #91b88b;
+    --danger: #d47b7b;
+    --warning: #c9a85d;
+
+}
+
+
+/* =========================================================
+   02. PÁGINA
+   ========================================================= */
+
+.configuracoes-page {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+
+    width: 100%;
+
+}
+
+
+/* =========================================================
+   03. HERO
+   ========================================================= */
+
+.config-hero {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+
+    min-height: 150px;
+
+    padding: 28px 30px;
+
+    border: 1px solid var(--crm-line);
+
+    border-radius: 16px;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(201, 168, 93, .12),
+            transparent 40%
+        ),
+        linear-gradient(
+            135deg,
+            #0d0d0d,
+            #080808
+        );
+
+    overflow: hidden;
+
+}
+
+
+.config-hero::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -70px;
+    top: -80px;
+
+    border: 1px solid rgba(201, 168, 93, .12);
+
+    border-radius: 50%;
+
+}
+
+
+.config-hero-content {
+
+    position: relative;
+
+    z-index: 1;
+
+    max-width: 760px;
+
+}
+
+
+.config-kicker {
+
+    margin-bottom: 6px;
+
+    color: var(--crm-gold);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.config-hero h1 {
+
+    margin: 0;
+
+    color: var(--crm-white);
+
+    font-size: clamp(24px, 3vw, 34px);
+
+    font-weight: 800;
+
+    line-height: 1.15;
+
+}
+
+
+.config-hero p {
+
+    margin: 9px 0 0;
+
+    max-width: 680px;
+
+    color: var(--crm-muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   04. CARDS
+   ========================================================= */
+
+.config-card {
+
+    width: 100%;
+
+    padding: 22px;
+
+    border: 1px solid var(--crm-line);
+
+    border-radius: 14px;
+
+    background: linear-gradient(
+        180deg,
+        rgba(18, 18, 18, .98),
+        rgba(10, 10, 10, .98)
+    );
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, .18);
+
+}
+
+
+.config-card-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid var(--crm-line);
+
+}
+
+
+.config-card-header h2 {
+
+    margin: 0;
+
+    color: var(--crm-white);
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+}
+
+
+.config-card-header p {
+
+    margin: 6px 0 0;
+
+    color: var(--crm-muted);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   05. PERFIL
+   ========================================================= */
+
+.profile-layout {
+
+    display: grid;
+
+    grid-template-columns: 190px minmax(0, 1fr);
+
+    gap: 30px;
+
+    align-items: center;
+
+}
+
+
+/* =========================================================
+   06. FOTO DE PERFIL
+   ========================================================= */
+
+.profile-photo-area {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 190px;
+
+    padding: 10px;
+
+}
+
+
+.profile-photo {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 120px;
+    height: 120px;
+
+    margin-bottom: 12px;
+
+    border: 2px solid var(--crm-gold);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(201, 168, 93, .16),
+            transparent 55%
+        ),
+        #101010;
+
+    box-shadow:
+        0 0 0 6px rgba(201, 168, 93, .05),
+        0 10px 30px rgba(0, 0, 0, .35);
+
+    overflow: hidden;
+
+}
+
+
+.profile-photo::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border: 1px solid rgba(255, 255, 255, .05);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+}
+
+
+.profile-photo img {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.profile-photo-initial {
+
+    color: var(--crm-gold-light);
+
+    font-size: 38px;
+
+    font-weight: 800;
+
+}
+
+
+#profilePhotoInitial {
+
+    color: var(--crm-gold-light);
+
+    font-size: 38px;
+
+    font-weight: 800;
+
+}
+
+
+.profile-photo-help {
+
+    margin-top: 9px;
+
+    color: var(--crm-muted);
+
+    font-size: 9px;
+
+    line-height: 1.5;
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   07. BOTÕES DA FOTO
+   ========================================================= */
+
+#alterarFotoBtn {
+
+    min-width: 125px;
+
+}
+
+
+.profile-remove-photo {
+
+    margin-top: 7px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: var(--danger);
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    cursor: pointer;
+
+}
+
+
+.profile-remove-photo:hover {
+
+    color: #efaaaa;
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   08. CAMPOS
+   ========================================================= */
+
+.profile-fields {
+
+    min-width: 0;
+
+}
+
+
+.config-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+
+}
+
+
+.form-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+.form-group.full {
+
+    grid-column: 1 / -1;
+
+}
+
+
+.form-group label {
+
+    color: var(--crm-text);
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+
+    width: 100%;
+
+    min-height: 42px;
+
+    padding: 10px 12px;
+
+    border: 1px solid var(--crm-line);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #090909;
+
+    color: var(--crm-white);
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.form-group textarea {
+
+    min-height: 110px;
+
+    resize: vertical;
+
+}
+
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+
+    color: #57534d;
+
+}
+
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+
+    border-color: var(--crm-gold);
+
+    background: #0c0c0c;
+
+    box-shadow:
+        0 0 0 3px rgba(201, 168, 93, .07);
+
+}
+
+
+.form-group input[readonly] {
+
+    color: var(--crm-muted);
+
+    background: #070707;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =========================================================
+   09. AÇÕES
+   ========================================================= */
+
+.config-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid var(--crm-line);
+
+}
+
+
+/* =========================================================
+   10. BOTÕES
+   ========================================================= */
+
+.configuracoes-page .btn {
+
+    min-height: 38px;
+
+    padding: 9px 15px;
+
+    border: 1px solid var(--crm-line-strong);
+
+    border-radius: 8px;
+
+    background: #0d0d0d;
+
+    color: var(--crm-text);
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .2s ease;
+
+}
+
+
+.configuracoes-page .btn:hover {
+
+    border-color: var(--crm-gold);
+
+    color: var(--crm-gold-light);
+
+    background: rgba(201, 168, 93, .06);
+
+}
+
+
+.configuracoes-page .btn:active {
+
+    transform: translateY(1px);
+
+}
+
+
+.configuracoes-page .btn-primary {
+
+    border-color: var(--crm-gold);
+
+    background: linear-gradient(
+        135deg,
+        var(--crm-gold),
+        var(--crm-gold-dark)
+    );
+
+    color: #080808;
+
+    font-weight: 800;
+
+}
+
+
+.configuracoes-page .btn-primary:hover {
+
+    border-color: var(--crm-gold-light);
+
+    background: linear-gradient(
+        135deg,
+        var(--crm-gold-light),
+        var(--crm-gold)
+    );
+
+    color: #050505;
+
+}
+
+
+.configuracoes-page .btn-danger {
+
+    border-color: rgba(212, 123, 123, .25);
+
+    color: var(--danger);
+
+}
+
+
+.configuracoes-page .btn-danger:hover {
+
+    border-color: var(--danger);
+
+    background: rgba(212, 123, 123, .06);
+
+}
+
+
+.configuracoes-page .btn-sm {
+
+    min-height: 34px;
+
+    padding: 7px 11px;
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   11. PREFERÊNCIAS
+   ========================================================= */
+
+.config-options {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.config-option {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    min-height: 65px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid var(--crm-line);
+
+    cursor: pointer;
+
+}
+
+
+.config-option:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.config-option > div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+}
+
+
+.config-option strong {
+
+    color: var(--crm-text);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+.config-option span {
+
+    color: var(--crm-muted);
+
+    font-size: 10px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   12. CHECKBOX
+   ========================================================= */
+
+.config-option input[type="checkbox"] {
+
+    appearance: none;
+
+    position: relative;
+
+    flex: 0 0 auto;
+
+    width: 40px;
+    height: 22px;
+
+    border: 1px solid var(--crm-line-strong);
+
+    border-radius: 20px;
+
+    outline: none;
+
+    background: #080808;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease;
+
+}
+
+
+.config-option input[type="checkbox"]::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 16px;
+    height: 16px;
+
+    top: 2px;
+    left: 2px;
+
+    border-radius: 50%;
+
+    background: #777;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+
+}
+
+
+.config-option input[type="checkbox"]:checked {
+
+    border-color: var(--crm-gold);
+
+    background: rgba(201, 168, 93, .18);
+
+}
+
+
+.config-option input[type="checkbox"]:checked::after {
+
+    transform: translateX(17px);
+
+    background: var(--crm-gold);
+
+}
+
+
+/* =========================================================
+   13. SEGURANÇA
+   ========================================================= */
+
+.security-actions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   14. SOBRE
+   ========================================================= */
+
+.config-about {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+}
+
+
+.config-about-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.config-about-brand .brand-mark {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid var(--crm-gold);
+
+    border-radius: 10px;
+
+    background: rgba(201, 168, 93, .06);
+
+    color: var(--crm-gold);
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+.config-about-brand > div:last-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+}
+
+
+.config-about-brand strong {
+
+    color: var(--crm-white);
+
+    font-size: 13px;
+
+}
+
+
+.config-about-brand span {
+
+    color: var(--crm-gold);
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.config-about p {
+
+    max-width: 760px;
+
+    margin: 0;
+
+    color: var(--crm-muted);
+
+    font-size: 11px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   15. MODAL
+   ========================================================= */
+
+.modal.hidden {
+
+    display: none;
+
+}
+
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+}
+
+
+.modal-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, .78);
+
+    backdrop-filter: blur(5px);
+
+}
+
+
+.modal-card {
+
+    position: relative;
+
+    z-index: 1;
+
+    width: min(100%, 520px);
+
+    max-height: calc(100vh - 40px);
+
+    overflow: auto;
+
+    border: 1px solid var(--crm-line-strong);
+
+    border-radius: 14px;
+
+    background: #0c0c0c;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, .55);
+
+}
+
+
+.modal-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 20px 22px;
+
+    border-bottom: 1px solid var(--crm-line);
+
+}
+
+
+.modal-header h2 {
+
+    margin: 0;
+
+    color: var(--crm-white);
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+
+.modal-close {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    border: 1px solid var(--crm-line);
+
+    border-radius: 7px;
+
+    background: #0a0a0a;
+
+    color: var(--crm-muted);
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+
+}
+
+
+.modal-close:hover {
+
+    border-color: var(--danger);
+
+    color: var(--danger);
+
+}
+
+
+.modal-body {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+    padding: 22px;
+
+}
+
+
+.modal-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 16px 22px;
+
+    border-top: 1px solid var(--crm-line);
+
+}
+
+
+/* =========================================================
+   16. UTILITÁRIO
+   ========================================================= */
+
+.hidden {
+
+    display: none !important;
+
+}
+
+
+.muted {
+
+    color: var(--crm-muted);
+
+}
+
+
+/* =========================================================
+   17. RESPONSIVIDADE — TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .profile-layout {
+
+        grid-template-columns: 150px minmax(0, 1fr);
+
+        gap: 20px;
+
+    }
+
+
+    .profile-photo {
+
+        width: 105px;
+        height: 105px;
+
+    }
+
+
+    .config-card {
+
+        padding: 18px;
+
+    }
+
+}
+
+
+/* =========================================================
+   18. RESPONSIVIDADE — MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .configuracoes-page {
+
+        gap: 10px;
+
+    }
+
+
+    .config-hero {
+
+        min-height: auto;
+
+        padding: 22px 18px;
+
+        border-radius: 12px;
+
+    }
+
+
+    .config-hero h1 {
+
+        font-size: 24px;
+
+    }
+
+
+    .config-hero p {
+
+        font-size: 11px;
+
+    }
+
+
+    .config-card {
+
+        padding: 16px;
+
+        border-radius: 11px;
+
+    }
+
+
+    .config-card-header {
+
+        margin-bottom: 16px;
+
+        padding-bottom: 12px;
+
+    }
+
+
+    .config-card-header h2 {
+
+        font-size: 15px;
+
+    }
+
+
+    .profile-layout {
+
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+
+    }
+
+
+    .profile-photo-area {
+
+        min-height: auto;
+
+    }
+
+
+    .config-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+
+    }
+
+
+    .form-group.full {
+
+        grid-column: auto;
+
+    }
+
+
+    .config-actions {
+
+        justify-content: stretch;
+
+    }
+
+
+    .config-actions .btn {
+
+        width: 100%;
+
+    }
+
+
+    .security-actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .security-actions .btn {
+
+        width: 100%;
+
+    }
+
+
+    .config-option {
+
+        gap: 12px;
+
+    }
+
+
+    .config-option span {
+
+        max-width: 240px;
+
+    }
+
+
+    .modal {
+
+        padding: 10px;
+
+    }
+
+
+    .modal-card {
+
+        max-height: calc(100vh - 20px);
+
+    }
+
+}
+
+
+/* =========================================================
+   19. MOBILE PEQUENO
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .config-hero {
+
+        padding: 18px 15px;
+
+    }
+
+
+    .config-card {
+
+        padding: 14px;
+
+    }
+
+
+    .config-card-header h2 {
+
+        font-size: 14px;
+
+    }
+
+
+    .config-card-header p {
+
+        font-size: 10px;
+
+    }
+
+
+    .profile-photo {
+
+        width: 95px;
+        height: 95px;
+
+    }
+
+
+    #profilePhotoInitial {
+
+        font-size: 32px;
+
+    }
+
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+
+        font-size: 11px;
+
+    }
+
+}

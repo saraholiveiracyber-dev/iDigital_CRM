@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="description"
+    content="Leads e Pipeline do iDigital CRM Premium 2.0"
+>
+
+<title>Leads & Pipeline | iDigital CRM Premium 2.0</title>
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
+<link
+    rel="stylesheet"
+    href="css/style.css"
+>
+
+<link
+    rel="stylesheet"
+    href="css/leads.css"
+>
+
+
+</head>
+
+<body>
+
+<div class="app-shell">
+
+
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            iD
+        </div>
+
+        <div>
+            iDigital CRM
+            <br>
+
+            <small class="muted">
+                Premium 2.0
+            </small>
+        </div>
+
+    </div>
+
+    <nav
+        class="nav"
+        aria-label="Navegação principal"
+    >
+
+        <a href="dashboard.html">
+            <span class="ico">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="clientes.html">
+            <span class="ico">♙</span>
+            <span>Clientes &amp; Cobranças</span>
+        </a>
+
+        <a
+            href="leads.html"
+            class="active"
+            aria-current="page"
+        >
+            <span class="ico">◈</span>
+            <span>Leads &amp; Pipeline</span>
+        </a>
+
+        <a href="agenda.html">
+            <span class="ico">◷</span>
+            <span>Agenda</span>
+        </a>
+
+        <a href="configuracoes.html">
+            <span class="ico">⚙</span>
+            <span>Configurações</span>
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <div class="user-chip">
+
+            <div
+                class="avatar"
+                id="userAvatar"
+            >
+                U
+            </div>
+
+            <div>
+
+                <strong id="userName">
+                    Usuário
+                </strong>
+
+                <div
+                    class="muted"
+                    id="userEmail"
+                >
+                    carregando...
+                </div>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-danger"
+            id="logoutBtn"
+        >
+            Sair
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                type="button"
+                class="btn menu-btn"
+                id="menuBtn"
+                aria-label="Abrir menu"
+            >
+                ☰
+            </button>
+
+            <strong>
+                Leads &amp; Pipeline
+            </strong>
+
+        </div>
+
+        <div
+            class="muted"
+            id="todayText"
+        ></div>
+
+    </header>
+
+
+    <div class="page leads-page">
+
+        <!-- =================================================
+             CABEÇALHO
+        ================================================== -->
+
+        <section class="leads-hero">
+
+            <div class="hero-content">
+
+                <div class="leads-kicker">
+                    CENTRAL DE OPORTUNIDADES
+                </div>
+
+                <h1>
+                    Leads
+                    <span>&amp; Pipeline</span>
+                </h1>
+
+                <p>
+                    Acompanhe oportunidades comerciais,
+                    orçamentos recebidos, pedidos de e-book
+                    e novos leads em um único lugar.
+                </p>
+
+            </div>
+
+            <div class="leads-actions">
+
+                <button
+                    type="button"
+                    class="btn"
+                    id="refreshLeadsBtn"
+                >
+                    ↻ Atualizar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="novoLeadBtn"
+                >
+                    + Novo lead
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MENSAGEM
+        ================================================== -->
+
+        <div
+            id="systemMessage"
+            class="system-message"
+            hidden
+        ></div>
+
+
+        <!-- =================================================
+             INDICADORES
+        ================================================== -->
+
+        <section class="control-summary">
+
+            <article class="control-card">
+
+                <div class="control-icon">
+                    ◫
+                </div>
+
+                <div class="control-content">
+
+                    <span>
+                        ORÇAMENTOS RECEBIDOS
+                    </span>
+
+                    <strong id="totalOrcamentosSite">
+                        0
+                    </strong>
+
+                    <small>
+                        Pedidos vindos do site
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="control-card">
+
+                <div class="control-icon">
+                    ◈
+                </div>
+
+                <div class="control-content">
+
+                    <span>
+                        PEDIDOS DE E-BOOK
+                    </span>
+
+                    <strong id="totalEbookPedidos">
+                        0
+                    </strong>
+
+                    <small>
+                        Projetos para produzir
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="control-card">
+
+                <div class="control-icon pending-icon">
+                    ◷
+                </div>
+
+                <div class="control-content">
+
+                    <span>
+                        PENDENTES
+                    </span>
+
+                    <strong id="totalPendentes">
+                        0
+                    </strong>
+
+                    <small>
+                        Precisam de atenção
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="control-card value-card">
+
+                <div class="control-icon">
+                    R$
+                </div>
+
+                <div class="control-content">
+
+                    <span>
+                        VALOR EM OPORTUNIDADES
+                    </span>
+
+                    <strong id="valorOportunidades">
+                        R$ 0,00
+                    </strong>
+
+                    <small>
+                        Oportunidades ativas
+                    </small>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             PIPELINE
+        ================================================== -->
+
+        <section class="pipeline-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="leads-kicker">
+                        CONTROLE COMERCIAL
+                    </div>
+
+                    <h2>
+                        Status das oportunidades
+                    </h2>
+
+                </div>
+
+                <div class="pipeline-total">
+
+                    <span>
+                        TOTAL
+                    </span>
+
+                    <strong id="pipelineCount">
+                        0 oportunidades
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="pipeline-grid">
+
+                <button
+                    type="button"
+                    class="pipeline-stage"
+                    data-filter-status="novo"
+                >
+
+                    <span class="pipeline-stage-icon">
+                        N
+                    </span>
+
+                    <span class="pipeline-stage-info">
+                        <small>
+                            NOVOS
+                        </small>
+
+                        <strong id="pipelineNovo">
+                            0
+                        </strong>
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="pipeline-stage"
+                    data-filter-status="pendente"
+                >
+
+                    <span class="pipeline-stage-icon">
+                        P
+                    </span>
+
+                    <span class="pipeline-stage-info">
+                        <small>
+                            PENDENTES
+                        </small>
+
+                        <strong id="pipelinePendente">
+                            0
+                        </strong>
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="pipeline-stage"
+                    data-filter-status="em_andamento"
+                >
+
+                    <span class="pipeline-stage-icon">
+                        A
+                    </span>
+
+                    <span class="pipeline-stage-info">
+                        <small>
+                            EM ANDAMENTO
+                        </small>
+
+                        <strong id="pipelineAndamento">
+                            0
+                        </strong>
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="pipeline-stage"
+                    data-filter-status="fechado"
+                >
+
+                    <span class="pipeline-stage-icon">
+                        C
+                    </span>
+
+                    <span class="pipeline-stage-info">
+                        <small>
+                            CONCLUÍDOS
+                        </small>
+
+                        <strong id="pipelineFechado">
+                            0
+                        </strong>
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="pipeline-stage"
+                    data-filter-status="cancelado"
+                >
+
+                    <span class="pipeline-stage-icon">
+                        X
+                    </span>
+
+                    <span class="pipeline-stage-info">
+                        <small>
+                            CANCELADOS
+                        </small>
+
+                        <strong id="pipelineCancelado">
+                            0
+                        </strong>
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LISTA
+        ================================================== -->
+
+        <section class="leads-list-card">
+
+            <div class="leads-list-header">
+
+                <div>
+
+                    <div class="leads-kicker">
+                        OPORTUNIDADES RECEBIDAS
+                    </div>
+
+                    <h2>
+                        O que precisa ser feito
+                    </h2>
+
+                </div>
+
+                <div
+                    class="result-count"
+                    id="resultCount"
+                >
+                    0 registros
+                </div>
+
+            </div>
+
+
+            <div class="leads-table-wrapper">
+
+                <table class="leads-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Tipo</th>
+                            <th>Serviço / Projeto</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Origem</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="leadsTableBody"></tbody>
+
+                </table>
+
+            </div>
+
+
+            <div
+                id="leadsEmpty"
+                class="table-empty hidden"
+            >
+
+                <div class="empty-icon">
+                    ◈
+                </div>
+
+                <strong>
+                    Nenhuma oportunidade encontrada
+                </strong>
+
+                <span>
+                    Orçamentos, pedidos de e-book e leads
+                    cadastrados aparecerão nesta área.
+                </span>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="emptyNewLeadBtn"
+                >
+                    + Novo lead
+                </button>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+```
+
+</div>
+
+<!-- =========================================================
+     MODAL
+========================================================== -->
+
+<div
+    class="modal hidden"
+    id="leadModal"
+    aria-hidden="true"
+>
+
+
+<div
+    class="modal-overlay"
+    id="leadModalOverlay"
+></div>
+
+
+<div class="modal-card lead-modal-card">
+
+    <div class="modal-header">
+
+        <div>
+
+            <div class="leads-kicker">
+                CADASTRO MANUAL
+            </div>
+
+            <h2 id="leadModalTitle">
+                Novo lead
+            </h2>
+
+            <p>
+                Cadastre uma oportunidade comercial
+                manualmente.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="modal-close"
+            id="fecharLeadModal"
+            aria-label="Fechar"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <form
+        id="leadForm"
+        autocomplete="off"
+    >
+
+        <input
+            type="hidden"
+            id="leadId"
+        >
+
+        <div class="modal-body">
+
+            <div class="form-section-title">
+                DADOS DO CLIENTE
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="leadNome">
+                    Nome / Empresa *
+                </label>
+
+                <input
+                    type="text"
+                    id="leadNome"
+                    placeholder="Nome do cliente ou empresa"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="leadContato">
+                        WhatsApp / Telefone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="leadContato"
+                        placeholder="(61) 99999-9999"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="leadEmail">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="leadEmail"
+                        placeholder="cliente@email.com"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-section-title">
+                PROJETO
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="leadServico">
+                        Serviço / Projeto
+                    </label>
+
+                    <input
+                        type="text"
+                        id="leadServico"
+                        placeholder="Ex.: Criação de e-book"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="leadValor">
+                        Valor estimado
+                    </label>
+
+                    <div class="money-input">
+
+                        <span>R$</span>
+
+                        <input
+                            type="text"
+                            id="leadValor"
+                            inputmode="decimal"
+                            placeholder="0,00"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="leadOrigem">
+                        Origem
+                    </label>
+
+                    <select id="leadOrigem">
+
+                        <option value="site">
+                            Site
+                        </option>
+
+                        <option value="kiwify">
+                            Kiwify
+                        </option>
+
+                        <option value="instagram">
+                            Instagram
+                        </option>
+
+                        <option value="whatsapp">
+                            WhatsApp
+                        </option>
+
+                        <option value="indicacao">
+                            Indicação
+                        </option>
+
+                        <option value="google">
+                            Google
+                        </option>
+
+                        <option value="outro" selected>
+                            Outro
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="leadEtapa">
+                        Status
+                    </label>
+
+                    <select id="leadEtapa">
+
+                        <option value="novo" selected>
+                            Novo
+                        </option>
+
+                        <option value="pendente">
+                            Pendente
+                        </option>
+
+                        <option value="em_andamento">
+                            Em andamento
+                        </option>
+
+                        <option value="fechado">
+                            Concluído
+                        </option>
+
+                        <option value="cancelado">
+                            Cancelado
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="leadOrigemId">
+                    Referência externa
+                </label>
+
+                <input
+                    type="text"
+                    id="leadOrigemId"
+                    placeholder="ID do orçamento, pedido ou venda"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="leadObs">
+                    Observações
+                </label>
+
+                <textarea
+                    id="leadObs"
+                    rows="4"
+                    placeholder="Detalhes do projeto, negociação, briefing..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn"
+                id="cancelarLeadBtn"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="saveLeadBtn"
+            >
+                Salvar lead
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/app.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/leads.js"></script>
+
+</body>
+</html>

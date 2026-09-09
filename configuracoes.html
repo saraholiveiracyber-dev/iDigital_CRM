@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Configurações do iDigital CRM Premium 2.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#080808"
+    >
+
+    <title>Configurações | iDigital CRM Premium 2.0</title>
+
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- CSS DA PÁGINA -->
+    <link rel="stylesheet" href="css/configuracoes.css">
+
+</head>
+
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                iD
+            </div>
+
+            <div>
+                iDigital CRM
+                <br>
+                <small class="muted">
+                    Premium 2.0
+                </small>
+            </div>
+
+        </div>
+
+
+        <nav
+            class="nav"
+            aria-label="Navegação principal"
+        >
+
+            <!-- DASHBOARD -->
+
+            <a href="dashboard.html">
+
+                <span class="ico">⌂</span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- CLIENTES -->
+
+            <a href="clientes.html">
+
+                <span class="ico">♙</span>
+
+                <span>
+                    Clientes &amp; Cobranças
+                </span>
+
+            </a>
+
+
+            <!-- LEADS -->
+
+            <a href="leads.html">
+
+                <span class="ico">◈</span>
+
+                <span>
+                    Leads &amp; Pipeline
+                </span>
+
+            </a>
+
+
+            <!-- AGENDA -->
+
+            <a href="agenda.html">
+
+                <span class="ico">◷</span>
+
+                <span>
+                    Agenda
+                </span>
+
+            </a>
+
+
+            <!-- CONFIGURAÇÕES -->
+
+            <a
+                href="configuracoes.html"
+                class="active"
+                aria-current="page"
+            >
+
+                <span class="ico">⚙</span>
+
+                <span>
+                    Configurações
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- USUÁRIO -->
+
+        <div class="sidebar-footer">
+
+            <div class="user-chip">
+
+                <div
+                    class="avatar"
+                    id="userAvatar"
+                >
+                    U
+                </div>
+
+                <div>
+
+                    <strong id="userName">
+                        Usuário
+                    </strong>
+
+                    <div
+                        class="muted"
+                        id="userEmail"
+                    >
+                        carregando...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn btn-danger"
+                id="logoutBtn"
+            >
+                Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="btn menu-btn"
+                    id="menuBtn"
+                    aria-label="Abrir menu"
+                >
+                    ☰
+                </button>
+
+                <strong>
+                    Configurações
+                </strong>
+
+            </div>
+
+
+            <div
+                class="muted"
+                id="todayText"
+            ></div>
+
+        </header>
+
+
+        <!-- =================================================
+             PAGE
+        ================================================== -->
+
+        <div class="page configuracoes-page">
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="config-hero">
+
+                <div class="config-hero-content">
+
+                    <div class="config-kicker">
+                        SISTEMA
+                    </div>
+
+                    <h1>
+                        Configurações
+                    </h1>
+
+                    <p>
+                        Gerencie seu perfil, empresa,
+                        preferências, integrações e
+                        segurança do seu CRM.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PERFIL
+            ================================================== -->
+
+            <section class="config-card profile-card">
+
+                <div class="config-card-header">
+
+                    <div>
+
+                        <div class="config-kicker">
+                            PERFIL
+                        </div>
+
+                        <h2>
+                            Dados do usuário
+                        </h2>
+
+                        <p>
+                            Atualize suas informações pessoais
+                            e sua foto de perfil.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    id="perfilForm"
+                    autocomplete="off"
+                >
+
+
+                    <!-- PERFIL SUPERIOR -->
+
+                    <div class="profile-layout">
+
+
+                        <!-- FOTO -->
+
+                        <div class="profile-photo-area">
+
+                            <div
+                                class="profile-photo"
+                                id="profilePhoto"
+                            >
+
+                                <img
+                                    id="profilePhotoImg"
+                                    src=""
+                                    alt="Foto de perfil"
+                                    class="hidden"
+                                >
+
+                                <span
+                                    id="profilePhotoInitial"
+                                >
+                                    U
+                                </span>
+
+                            </div>
+
+
+                            <input
+                                type="file"
+                                id="perfilFoto"
+                                accept="image/png,image/jpeg,image/webp"
+                                hidden
+                            >
+
+
+                            <button
+                                type="button"
+                                class="btn btn-sm"
+                                id="alterarFotoBtn"
+                            >
+                                📷 Alterar foto
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="profile-remove-photo hidden"
+                                id="removerFotoBtn"
+                            >
+                                Remover foto
+                            </button>
+
+
+                            <span class="profile-photo-help">
+                                JPG, PNG ou WEBP
+                                <br>
+                                Máximo recomendado: 2 MB
+                            </span>
+
+                        </div>
+
+
+                        <!-- DADOS -->
+
+                        <div class="profile-fields">
+
+                            <div class="config-grid">
+
+
+                                <!-- NOME -->
+
+                                <div class="form-group">
+
+                                    <label for="perfilNome">
+                                        Nome
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="perfilNome"
+                                        placeholder="Seu nome"
+                                        autocomplete="name"
+                                    >
+
+                                </div>
+
+
+                                <!-- EMAIL -->
+
+                                <div class="form-group">
+
+                                    <label for="perfilEmail">
+                                        E-mail
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        id="perfilEmail"
+                                        placeholder="seu@email.com"
+                                        autocomplete="email"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- TELEFONE -->
+
+                                <div class="form-group">
+
+                                    <label for="perfilTelefone">
+                                        Telefone
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        id="perfilTelefone"
+                                        placeholder="(00) 00000-0000"
+                                        autocomplete="tel"
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AÇÕES -->
+
+                    <div class="config-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="salvarPerfilBtn"
+                        >
+                            💾 Salvar perfil
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EMPRESA
+            ================================================== -->
+
+            <section class="config-card">
+
+                <div class="config-card-header">
+
+                    <div>
+
+                        <div class="config-kicker">
+                            EMPRESA
+                        </div>
+
+                        <h2>
+                            Informações da empresa
+                        </h2>
+
+                        <p>
+                            Configure os dados comerciais
+                            utilizados pelo CRM.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    id="empresaForm"
+                    autocomplete="off"
+                >
+
+                    <div class="config-grid">
+
+
+                        <!-- NOME -->
+
+                        <div class="form-group">
+
+                            <label for="empresaNome">
+                                Nome da empresa
+                            </label>
+
+                            <input
+                                type="text"
+                                id="empresaNome"
+                                placeholder="Nome da empresa"
+                            >
+
+                        </div>
+
+
+                        <!-- CNPJ -->
+
+                        <div class="form-group">
+
+                            <label for="empresaCnpj">
+                                CNPJ
+                            </label>
+
+                            <input
+                                type="text"
+                                id="empresaCnpj"
+                                placeholder="00.000.000/0000-00"
+                                maxlength="18"
+                            >
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+
+                        <div class="form-group">
+
+                            <label for="empresaEmail">
+                                E-mail comercial
+                            </label>
+
+                            <input
+                                type="email"
+                                id="empresaEmail"
+                                placeholder="contato@empresa.com"
+                            >
+
+                        </div>
+
+
+                        <!-- TELEFONE -->
+
+                        <div class="form-group">
+
+                            <label for="empresaTelefone">
+                                Telefone comercial
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="empresaTelefone"
+                                placeholder="(00) 00000-0000"
+                            >
+
+                        </div>
+
+
+                        <!-- ENDEREÇO -->
+
+                        <div class="form-group full">
+
+                            <label for="empresaEndereco">
+                                Endereço
+                            </label>
+
+                            <input
+                                type="text"
+                                id="empresaEndereco"
+                                placeholder="Endereço comercial"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="config-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="salvarEmpresaBtn"
+                        >
+                            💾 Salvar empresa
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PREFERÊNCIAS
+            ================================================== -->
+
+            <section class="config-card">
+
+                <div class="config-card-header">
+
+                    <div>
+
+                        <div class="config-kicker">
+                            PREFERÊNCIAS
+                        </div>
+
+                        <h2>
+                            Preferências do sistema
+                        </h2>
+
+                        <p>
+                            Personalize o comportamento do CRM.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="config-options">
+
+
+                    <!-- NOTIFICAÇÕES -->
+
+                    <label class="config-option">
+
+                        <div>
+
+                            <strong>
+                                Notificações
+                            </strong>
+
+                            <span>
+                                Receber alertas importantes do CRM.
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="checkbox"
+                            id="notificacoesAtivas"
+                            checked
+                        >
+
+                    </label>
+
+
+                    <!-- LEMBRETES -->
+
+                    <label class="config-option">
+
+                        <div>
+
+                            <strong>
+                                Lembretes da agenda
+                            </strong>
+
+                            <span>
+                                Exibir lembretes dos próximos compromissos.
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="checkbox"
+                            id="lembretesAgenda"
+                            checked
+                        >
+
+                    </label>
+
+
+                    <!-- ATUALIZAÇÃO -->
+
+                    <label class="config-option">
+
+                        <div>
+
+                            <strong>
+                                Atualização automática
+                            </strong>
+
+                            <span>
+                                Atualizar informações do painel automaticamente.
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="checkbox"
+                            id="atualizacaoAutomatica"
+                            checked
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <div class="config-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="salvarPreferenciasBtn"
+                    >
+                        💾 Salvar preferências
+                    </button>
+
+                </div>
+
+            </section>
+            
+            <!-- =================================================
+                 SEGURANÇA
+            ================================================== -->
+
+            <section class="config-card">
+
+                <div class="config-card-header">
+
+                    <div>
+
+                        <div class="config-kicker">
+                            SEGURANÇA
+                        </div>
+
+                        <h2>
+                            Conta e acesso
+                        </h2>
+
+                        <p>
+                            Controle o acesso e a segurança
+                            da sua conta.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="security-actions">
+
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="alterarSenhaBtn"
+                    >
+                        🔐 Alterar senha
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        id="sairContaBtn"
+                    >
+                        Sair da conta
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SOBRE
+            ================================================== -->
+
+            <section class="config-card config-about">
+
+                <div class="config-about-brand">
+
+                    <div class="brand-mark">
+                        iD
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            iDigital CRM
+                        </strong>
+
+                        <span>
+                            Premium 2.0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+                    Sistema de gestão comercial desenvolvido
+                    para centralizar clientes, leads, orçamentos,
+                    cobranças, financeiro e agenda.
+                </p>
+
+
+                <small class="muted">
+                    © 2026 iDigital Agência.
+                    Todos os direitos reservados.
+                </small>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================================
+     MODAL — ALTERAR SENHA
+========================================================== -->
+
+<div
+    class="modal hidden"
+    id="senhaModal"
+    aria-hidden="true"
+>
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="config-kicker">
+                    SEGURANÇA
+                </div>
+
+                <h2>
+                    Alterar senha
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="fecharSenhaModal"
+                aria-label="Fechar"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <form
+            id="senhaForm"
+            autocomplete="off"
+        >
+
+            <div class="modal-body">
+
+
+                <!-- NOVA SENHA -->
+
+                <div class="form-group">
+
+                    <label for="novaSenha">
+                        Nova senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="novaSenha"
+                        placeholder="Digite a nova senha"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CONFIRMAÇÃO -->
+
+                <div class="form-group">
+
+                    <label for="confirmarSenha">
+                        Confirmar nova senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmarSenha"
+                        placeholder="Digite novamente a senha"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn"
+                    id="cancelarSenhaBtn"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="salvarSenhaBtn"
+                >
+                    🔐 Atualizar senha
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     SCRIPTS
+========================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/app.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/configuracoes.js"></script>
+
+
+</body>
+
+</html>
