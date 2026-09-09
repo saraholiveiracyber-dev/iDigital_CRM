@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Login do iDigital CRM Premium"
+    >
+
+    <title>Login | iDigital CRM Premium</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="login-page">
+
+    <section class="login-visual">
+
+        <div class="login-visual-content">
+
+            <div class="brand login-brand">
+                <div class="brand-mark">iD</div>
+
+                <div>
+                    <strong>iDigital CRM</strong>
+                    <small>Premium 2.0</small>
+                </div>
+            </div>
+
+            <div class="login-visual-text">
+
+                <div class="login-kicker">
+                    GESTÃO COMERCIAL PREMIUM
+                </div>
+
+                <h1>
+                    Gestão comercial
+                    <span>em outro nível.</span>
+                </h1>
+
+                <p>
+                    Clientes, pipeline, propostas, financeiro,
+                    cobranças e agenda em um único painel
+                    premium, seguro e conectado ao Supabase.
+                </p>
+
+            </div>
+
+            <div class="login-visual-footer">
+                © 2026 iDigital Agência
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="login-side">
+
+        <div class="login-card">
+
+            <div class="login-card-header">
+
+                <div class="login-icon">
+                    iD
+                </div>
+
+                <div>
+                    <div class="login-kicker">
+                        AUTENTICAÇÃO
+                    </div>
+
+                    <h2>
+                        Acessar painel
+                    </h2>
+
+                    <p>
+                        Entre com seus dados para acessar
+                        o iDigital CRM.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div
+                id="loginNotice"
+                class="login-notice hidden"
+                role="alert"
+            ></div>
+
+
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
+
+                <div class="form-group">
+
+                    <label for="email">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="seu@email.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="senha">
+                        Senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="loginBtn"
+                    style="width:100%;"
+                >
+                    Entrar no painel
+                </button>
+
+            </form>
+
+
+            <button
+                type="button"
+                class="btn btn-link"
+                id="forgotBtn"
+            >
+                Esqueci minha senha
+            </button>
+
+
+            <div class="login-card-footer">
+                Sistema protegido por Supabase Auth.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+
+</body>
+</html>
