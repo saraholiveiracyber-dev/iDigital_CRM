@@ -1,4 +1,11 @@
 {
+  "name": "idigital-crm",
+  "version": "1.0.0",
+  "description": "iDigital CRM",
+  "main": "server.cjs",
+  "scripts": {
+    "start": "node server.cjs"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
     "cors": "^2.8.6",
