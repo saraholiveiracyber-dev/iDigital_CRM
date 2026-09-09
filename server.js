@@ -8,18 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/*
-=========================================================
-ARQUIVOS ESTÁTICOS
-=========================================================
-*/
-app.use(express.static(path.join(__dirname)));
+/* Arquivos do CRM */
+app.use(express.static(__dirname));
 
-/*
-=========================================================
-HEALTH CHECK
-=========================================================
-*/
+/* Health */
 app.get("/api/health", (req, res) => {
     res.json({
         ok: true,
@@ -27,13 +19,8 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-/*
-=========================================================
-ASAAS
-=========================================================
-*/
+/* Asaas */
 app.post("/api/asaas/cobranca", async (req, res) => {
-
     if (!process.env.ASAAS_API_KEY) {
         return res.status(501).json({
             error: "ASAAS_API_KEY não configurada no servidor."
@@ -45,43 +32,14 @@ app.post("/api/asaas/cobranca", async (req, res) => {
     });
 });
 
-/*
-=========================================================
-FALLBACK
-=========================================================
-*/
-app.get("/{*splat}", (req, res) => {
-
-    const arquivo = path.join(
-        __dirname,
-        req.path
-    );
-
-    res.sendFile(arquivo, (erro) => {
-
-        if (erro) {
-
-            res.sendFile(
-                path.join(__dirname, "index.html")
-            );
-
-        }
-
-    });
-
+/* Página inicial */
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
-/*
-=========================================================
-SERVIDOR
-=========================================================
-*/
+/* Servidor */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-
-    console.log(
-        `iDigital CRM rodando em http://localhost:${PORT}`
-    );
-
+    console.log(`iDigital CRM rodando na porta ${PORT}`);
 });
