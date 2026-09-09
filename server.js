@@ -20,7 +20,9 @@ app.post("/api/asaas/cobranca", async (req,res)=>{
   return res.status(501).json({error:"Endpoint-base preparado. Implemente conforme sua conta e ambiente Asaas."});
 });
 
-app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
+app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
 const PORT=process.env.PORT||3000;
 app.listen(PORT,()=>console.log(`iDigital CRM rodando em http://localhost:${PORT}`));
 
