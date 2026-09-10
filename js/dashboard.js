@@ -509,10 +509,9 @@
              * NOME
              */
             const nome =
-                usuario.user_metadata?.nome ||
-                usuario.user_metadata?.name ||
-                usuario.email?.split("@")[0] ||
-                "Usuário";
+    usuario.user_metadata?.nome ||
+    usuario.user_metadata?.name ||
+    "Sarah Oliveira";
 
 
             const dashboardNome =
