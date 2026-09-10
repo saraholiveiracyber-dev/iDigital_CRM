@@ -1,53 +1,30 @@
-/**
- * ============================================================
- * iDigital CRM
- * API — Kiwify Webhook
- * ============================================================
- *
- * Endpoint:
- * POST /api/kiwify-webhook
- *
- * Variáveis necessárias na Vercel:
- * SUPABASE_URL
- * SUPABASE_SERVICE_ROLE_KEY
- *
- * Tabela:
- * public.ebook_pedidos
- * ============================================================
- */
-
 "use strict";
 
 const { createClient } = require("@supabase/supabase-js");
-
-/* ============================================================
-   CONFIGURAÇÃO
-============================================================ */
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY =
     process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-let supabase = null;
-
-if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
-    supabase = createClient(
-        SUPABASE_URL,
-        SUPABASE_SERVICE_ROLE_KEY,
-        {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        }
-    );
-}
+const supabase =
+    SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+        ? createClient(
+              SUPABASE_URL,
+              SUPABASE_SERVICE_ROLE_KEY,
+              {
+                  auth: {
+                      autoRefreshToken: false,
+                      persistSession: false
+                  }
+              }
+          )
+        : null;
 
 /* ============================================================
    HELPERS
 ============================================================ */
 
-function primeiroValor(...valores) {
+function primeiro(...valores) {
     for (const valor of valores) {
         if (
             valor !== undefined &&
@@ -55,34 +32,6 @@ function primeiroValor(...valores) {
             valor !== ""
         ) {
             return valor;
-        }
-    }
-
-    return null;
-}
-
-function caminho(obj, caminhos) {
-    for (const caminhoAtual of caminhos) {
-        const partes = caminhoAtual.split(".");
-        let atual = obj;
-
-        for (const parte of partes) {
-            if (
-                atual === undefined ||
-                atual === null
-            ) {
-                break;
-            }
-
-            atual = atual[parte];
-        }
-
-        if (
-            atual !== undefined &&
-            atual !== null &&
-            atual !== ""
-        ) {
-            return atual;
         }
     }
 
@@ -106,13 +55,6 @@ function numero(valor) {
         .trim()
         .replace(/[R$\s]/g, "");
 
-    /*
-     * Trata:
-     * 89,90
-     * 89.90
-     * 1.299,90
-     */
-
     if (
         texto.includes(".") &&
         texto.includes(",")
@@ -124,11 +66,18 @@ function numero(valor) {
         texto = texto.replace(",", ".");
     }
 
-    const resultado = Number(texto);
+    const n = Number(texto);
 
-    return Number.isFinite(resultado)
-        ? resultado
-        : 0;
+    return Number.isFinite(n) ? n : 0;
+}
+
+/*
+ * Kiwify envia os valores financeiros em centavos.
+ */
+function reaisDeCentavos(valor) {
+    return Number(
+        (numero(valor) / 100).toFixed(2)
+    );
 }
 
 function dataValida(valor) {
@@ -136,7 +85,9 @@ function dataValida(valor) {
         return null;
     }
 
-    const data = new Date(valor);
+    const data = new Date(
+        String(valor).replace(" ", "T")
+    );
 
     if (Number.isNaN(data.getTime())) {
         return null;
@@ -146,79 +97,67 @@ function dataValida(valor) {
 }
 
 /* ============================================================
-   STATUS DO PEDIDO
+   STATUS
 ============================================================ */
 
-function normalizarStatus(valor) {
-    const texto = String(valor || "")
-        .trim()
+function normalizarStatus(payload) {
+    const status = String(
+        primeiro(
+            payload.order_status,
+            payload.status,
+            payload.payment_status,
+            ""
+        )
+    )
         .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
         .replace(/[_-]/g, " ");
 
+    const evento = String(
+        payload.webhook_event_type || ""
+    )
+        .toLowerCase()
+        .trim();
+
     /*
-     * PAGOS
+     * Eventos que representam pagamento confirmado
      */
-
-    const pagos = [
-        "paid",
-        "pago",
-        "pagamento aprovado",
-        "approved",
-        "aprovado",
-        "completed",
-        "complete",
-        "confirmed",
-        "confirmado",
-        "success",
-        "successful",
-        "succeeded",
-        "captured",
-        "authorized",
-        "autorizado"
-    ];
-
-    if (pagos.includes(texto)) {
+  if (
+    status === "paid" ||
+    status === "approved" ||
+    status === "completed" ||
+    status === "complete" ||
+    status === "confirmed" ||
+    evento.includes("approved") ||
+    evento.includes("paid") ||
+    evento.includes("sale_completed") ||
+    evento.includes("subscription_charge")
+) {
         return "pago";
     }
 
     /*
-     * CANCELADOS / REEMBOLSADOS
+     * Cancelamento / reembolso / chargeback
      */
-
-    const cancelados = [
-        "cancelled",
-        "canceled",
-        "cancelado",
-        "refunded",
-        "refund",
-        "reembolsado",
-        "chargeback",
-        "chargedback",
-        "recusado",
-        "rejected",
-        "denied",
-        "failed",
-        "failure"
-    ];
-
-    if (cancelados.includes(texto)) {
+    if (
+        status.includes("refunded") ||
+        status.includes("refund") ||
+        status.includes("cancel") ||
+        status.includes("chargeback") ||
+        evento.includes("refund") ||
+        evento.includes("chargeback") ||
+        evento.includes("cancel")
+    ) {
         return "cancelado";
     }
 
     /*
-     * TODO O RESTANTE FICA COMO PENDENTE
-     *
-     * Exemplos:
      * waiting_payment
      * waiting
      * pending
-     * pendente
-     * boleto
-     * pix aguardando
+     * pix_created
+     * billet_created
      */
-
     return "pendente";
 }
 
@@ -226,521 +165,327 @@ function normalizarStatus(valor) {
    MÉTODO DE PAGAMENTO
 ============================================================ */
 
-function normalizarMetodoPagamento(valor) {
-    const texto = String(valor || "")
-        .trim()
+function normalizarMetodo(payload) {
+    const metodo = String(
+        primeiro(
+            payload.payment_method,
+            payload.paymentMethod,
+            payload.metodo_pagamento,
+            ""
+        )
+    )
         .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[_-]/g, " ");
+        .trim();
 
-    if (
-        texto.includes("pix")
-    ) {
+    if (metodo.includes("pix")) {
         return "PIX";
     }
 
     if (
-        texto.includes("boleto") ||
-        texto.includes("bank slip") ||
-        texto.includes("bankslip")
+        metodo.includes("boleto") ||
+        metodo.includes("billet")
     ) {
         return "Boleto";
     }
 
     if (
-        texto.includes("credit") ||
-        texto.includes("credito") ||
-        texto.includes("cartao") ||
-        texto.includes("card")
+        metodo.includes("credit") ||
+        metodo.includes("card") ||
+        metodo.includes("credito")
     ) {
         return "Cartão";
     }
 
     if (
-        texto.includes("debit") ||
-        texto.includes("debito")
+        metodo.includes("debit") ||
+        metodo.includes("debito")
     ) {
         return "Débito";
     }
 
-    if (texto) {
-        return valor;
-    }
-
-    return "Não informado";
+    return metodo
+        ? payload.payment_method
+        : "Não informado";
 }
 
 /* ============================================================
-   EXTRAÇÃO DO CLIENTE
-============================================================ */
-
-function extrairCliente(payload) {
-    const cliente =
-        payload?.customer ||
-        payload?.client ||
-        payload?.buyer ||
-        payload?.comprador ||
-        payload?.data?.customer ||
-        payload?.data?.buyer ||
-        {};
-
-    return {
-        nome: primeiroValor(
-            cliente.name,
-            cliente.nome,
-            payload.name,
-            payload.nome,
-            payload.customer_name,
-            payload.buyer_name,
-            payload.data?.name,
-            payload.data?.nome
-        ),
-
-        email: primeiroValor(
-            cliente.email,
-            payload.email,
-            payload.customer_email,
-            payload.buyer_email,
-            payload.data?.email
-        ),
-
-        telefone: primeiroValor(
-            cliente.phone,
-            cliente.telefone,
-            cliente.mobile,
-            payload.phone,
-            payload.telefone,
-            payload.customer_phone,
-            payload.buyer_phone,
-            payload.data?.phone
-        ),
-
-        documento: primeiroValor(
-            cliente.document,
-            cliente.documento,
-            cliente.cpf,
-            payload.document,
-            payload.documento,
-            payload.cpf,
-            payload.customer_document,
-            payload.buyer_document,
-            payload.data?.document
-        )
-    };
-}
-
-/* ============================================================
-   EXTRAÇÃO DO PRODUTO
-============================================================ */
-
-function extrairProduto(payload) {
-    const produto =
-        payload?.product ||
-        payload?.produto ||
-        payload?.data?.product ||
-        payload?.data?.produto ||
-        {};
-
-    const offer =
-        payload?.offer ||
-        payload?.oferta ||
-        payload?.data?.offer ||
-        payload?.data?.oferta ||
-        {};
-
-    return {
-        id: primeiroValor(
-            produto.id,
-            produto.product_id,
-            produto.codigo,
-            payload.product_id,
-            payload.produto_id,
-            payload.data?.product_id
-        ),
-
-        nome: primeiroValor(
-            produto.name,
-            produto.nome,
-            produto.title,
-            payload.product_name,
-            payload.produto_nome,
-            payload.produto,
-            payload.product,
-            payload.data?.product_name,
-            "E-book"
-        ),
-
-        codigo: primeiroValor(
-            produto.code,
-            produto.codigo,
-            produto.slug,
-            payload.product_code,
-            payload.produto_codigo
-        ),
-
-        tipo: primeiroValor(
-            produto.type,
-            produto.tipo,
-            payload.product_type,
-            "ebook"
-        ),
-
-        oferta: primeiroValor(
-            offer.name,
-            offer.nome,
-            offer.title,
-            payload.offer_name,
-            payload.oferta
-        )
-    };
-}
-
-/* ============================================================
-   EXTRAÇÃO DOS IDENTIFICADORES
-============================================================ */
-
-function extrairIdentificadores(payload) {
-    return {
-        kiwify_id: primeiroValor(
-            payload.kiwify_id,
-            payload.kiwifyId,
-            payload.id,
-            payload.data?.id
-        ),
-
-        transaction_id: primeiroValor(
-            payload.transaction_id,
-            payload.transactionId,
-            payload.kiwify_transaction_id,
-            payload.data?.transaction_id,
-            payload.transaction?.id
-        ),
-
-        order_id: primeiroValor(
-            payload.order_id,
-            payload.orderId,
-            payload.kiwify_order_id,
-            payload.data?.order_id,
-            payload.order?.id
-        )
-    };
-}
-
-/* ============================================================
-   EXTRAÇÃO FINANCEIRA
-============================================================ */
-
-function extrairFinanceiro(payload) {
-    const payment =
-        payload?.payment ||
-        payload?.pagamento ||
-        payload?.data?.payment ||
-        payload?.data?.pagamento ||
-        {};
-
-    const sale =
-        payload?.sale ||
-        payload?.venda ||
-        payload?.data?.sale ||
-        payload?.data?.venda ||
-        {};
-
-    const valorTotal = numero(
-        primeiroValor(
-            payload.valor_total,
-            payload.valorTotal,
-            payload.total,
-            payload.amount,
-            payload.purchase_amount,
-
-            sale.valor_total,
-            sale.total,
-            sale.amount,
-
-            payload.data?.valor_total,
-            payload.data?.total,
-
-            payload.valor,
-            payload.value,
-            payload.price,
-
-            payment.amount,
-            payment.value
-        )
-    );
-
-    let valorPago = numero(
-        primeiroValor(
-            payload.valor_pago,
-            payload.valorPago,
-            payload.paid_amount,
-            payload.amount_paid,
-
-            sale.valor_pago,
-            sale.paid_amount,
-
-            payment.paid_amount,
-            payment.amount_paid
-        )
-    );
-
-    const status = normalizarStatus(
-        primeiroValor(
-            payload.status,
-            payload.payment_status,
-            payload.sale_status,
-            payload.data?.status,
-            payment.status,
-            sale.status
-        )
-    );
-
-    /*
-     * Se o pedido está pago e a Kiwify não enviou
-     * valor_pago separado, usamos o valor total.
-     */
-
-    if (
-        status === "pago" &&
-        valorPago <= 0
-    ) {
-        valorPago = valorTotal;
-    }
-
-    const valorLiquido = numero(
-        primeiroValor(
-            payload.valor_liquido,
-            payload.valorLiquido,
-            payload.net_amount,
-            payload.net_value,
-
-            sale.valor_liquido,
-            sale.net_amount,
-
-            payment.net_amount
-        )
-    );
-
-    const metodo = normalizarMetodoPagamento(
-        primeiroValor(
-            payload.metodo_pagamento,
-            payload.metodoPagamento,
-            payload.payment_method,
-            payload.paymentMethod,
-            payload.method,
-
-            payment.method,
-            payment.payment_method,
-            payment.type,
-
-            sale.payment_method
-        )
-    );
-
-    const parcelasNumero = Number(
-        primeiroValor(
-            payload.parcelas,
-            payload.installments,
-            payload.installment_count,
-            payment.installments,
-            sale.installments,
-            1
-        )
-    );
-
-    const quantidadeNumero = Number(
-        primeiroValor(
-            payload.quantidade,
-            payload.quantity,
-            payload.qty,
-            sale.quantity,
-            1
-        )
-    );
-
-    return {
-        valor: valorTotal,
-        valor_total: valorTotal,
-        valor_pago: valorPago,
-        valor_liquido: valorLiquido,
-        moeda: primeiroValor(
-            payload.moeda,
-            payload.currency,
-            payment.currency,
-            "BRL"
-        ),
-        status,
-        metodo_pagamento: metodo,
-        parcelas: Number.isFinite(parcelasNumero)
-            ? parcelasNumero
-            : 1,
-        quantidade: Number.isFinite(quantidadeNumero)
-            ? quantidadeNumero
-            : 1
-    };
-}
-
-/* ============================================================
-   EXTRAÇÃO DE DATAS
-============================================================ */
-
-function extrairDatas(payload) {
-    const payment =
-        payload?.payment ||
-        payload?.pagamento ||
-        payload?.data?.payment ||
-        {};
-
-    const dataCompra = dataValida(
-        primeiroValor(
-            payload.data_compra,
-            payload.dataCompra,
-            payload.purchase_date,
-            payload.created_at,
-            payload.createdAt,
-            payload.created,
-            payload.data?.created_at,
-            payload.data?.createdAt
-        )
-    );
-
-    const dataPagamento = dataValida(
-        primeiroValor(
-            payload.data_pagamento,
-            payload.dataPagamento,
-            payload.paid_at,
-            payload.paidAt,
-            payload.payment_date,
-            payload.paymentDate,
-            payment.paid_at,
-            payment.paidAt,
-            payload.data?.paid_at
-        )
-    );
-
-    return {
-        data_compra: dataCompra,
-        data_pagamento: dataPagamento
-    };
-}
-
-/* ============================================================
-   MONTAR REGISTRO
+   MONTAGEM DO REGISTRO
 ============================================================ */
 
 function montarRegistro(payload) {
-    const cliente = extrairCliente(payload);
-    const produto = extrairProduto(payload);
-    const ids = extrairIdentificadores(payload);
-    const financeiro = extrairFinanceiro(payload);
-    const datas = extrairDatas(payload);
-
-    const afiliado =
-        payload?.affiliate ||
-        payload?.afiliado ||
-        payload?.data?.affiliate ||
+    const customer =
+        payload.Customer ||
+        payload.customer ||
         {};
 
+    const product =
+        payload.Product ||
+        payload.product ||
+        {};
+
+    const commissions =
+        payload.Commissions ||
+        payload.commissions ||
+        {};
+
+    const status =
+        normalizarStatus(payload);
+
+    /*
+     * Valor principal da venda.
+     *
+     * Prioridade:
+     * charge_amount
+     * product_base_price
+     * settlement_amount
+     */
+
+    const valorTotalCentavos =
+        primeiro(
+            commissions.charge_amount,
+            commissions.product_base_price,
+            payload.amount,
+            payload.value,
+            payload.total
+        );
+
+    const valorTotal =
+        reaisDeCentavos(
+            valorTotalCentavos
+        );
+
+    const valorLiquido =
+        reaisDeCentavos(
+            primeiro(
+                commissions.settlement_amount,
+                payload.valor_liquido,
+                payload.net_amount
+            )
+        );
+
+    let valorPago = 0;
+
+    if (status === "pago") {
+        valorPago = valorTotal;
+    }
+
+    /*
+     * Dados do cliente
+     */
+
+    const nome =
+        primeiro(
+            customer.full_name,
+            customer.name,
+            customer.nome
+        );
+
+    const email =
+        primeiro(
+            customer.email
+        );
+
+    const telefone =
+        primeiro(
+            customer.mobile,
+            customer.phone,
+            customer.telefone
+        );
+
+    const documento =
+        primeiro(
+            customer.CPF,
+            customer.cpf,
+            customer.document,
+            customer.documento,
+            customer.cnpj
+        );
+
+    /*
+     * Identificadores
+     */
+
+    const orderId =
+        primeiro(
+            payload.order_id,
+            payload.orderId
+        );
+
+    const transactionId =
+        primeiro(
+            payload.transaction_id,
+            payload.transactionId
+        );
+
+    const kiwifyId =
+        primeiro(
+            payload.kiwify_id,
+            payload.id,
+            payload.order_ref
+        );
+
+    /*
+     * Datas
+     */
+
+    const dataCompra =
+        dataValida(
+            primeiro(
+                payload.created_at,
+                payload.createdAt
+            )
+        );
+
+    const dataPagamento =
+        dataValida(
+            primeiro(
+                payload.approved_date,
+                payload.paid_at,
+                payload.payment_date
+            )
+        );
+
+    /*
+     * Parcelas
+     */
+
+    const parcelasNumero =
+        Number(
+            primeiro(
+                payload.installments,
+                payload.parcelas,
+                1
+            )
+        );
+
+    /*
+     * Quantidade
+     */
+
+    const quantidadeNumero =
+        Number(
+            primeiro(
+                payload.quantity,
+                payload.quantidade,
+                1
+            )
+        );
+
+    /*
+     * Afiliado
+     */
+
+    const afiliado =
+        (
+            commissions.commissioned_stores ||
+            []
+        ).find(
+            item =>
+                String(item.type || "")
+                    .toLowerCase() ===
+                "affiliate"
+        );
+
     return {
-        kiwify_id: ids.kiwify_id,
+        kiwify_id: kiwifyId,
 
         transaction_id:
-            ids.transaction_id,
+            transactionId,
 
         order_id:
-            ids.order_id,
+            orderId,
 
         produto_id:
-            produto.id,
+            primeiro(
+                product.product_id,
+                product.id
+            ),
 
         produto_nome:
-            produto.nome,
+            primeiro(
+                product.product_name,
+                product.name,
+                "E-book"
+            ),
 
         produto_codigo:
-            produto.codigo,
+            primeiro(
+                product.product_code,
+                product.code
+            ),
 
         produto_tipo:
-            produto.tipo,
+            primeiro(
+                payload.product_type,
+                "ebook"
+            ),
 
-        nome:
-            cliente.nome,
+        nome,
 
-        email:
-            cliente.email,
+        email,
 
-        telefone:
-            cliente.telefone,
+        telefone,
 
-        documento:
-            cliente.documento,
+        documento,
 
         valor:
-            financeiro.valor,
+            valorTotal,
 
         valor_pago:
-            financeiro.valor_pago,
+            valorPago,
 
         valor_total:
-            financeiro.valor_total,
+            valorTotal,
 
         valor_liquido:
-            financeiro.valor_liquido,
+            valorLiquido,
 
         moeda:
-            financeiro.moeda,
+            commissions.currency ||
+            "BRL",
 
-        status:
-            financeiro.status,
+        status,
 
         metodo_pagamento:
-            financeiro.metodo_pagamento,
+            normalizarMetodo(payload),
 
         parcelas:
-            financeiro.parcelas,
+            Number.isFinite(parcelasNumero)
+                ? parcelasNumero
+                : 1,
 
         quantidade:
-            financeiro.quantidade,
+            Number.isFinite(quantidadeNumero)
+                ? quantidadeNumero
+                : 1,
 
         afiliado_id:
-            primeiroValor(
-                afiliado.id,
-                afiliado.affiliate_id,
-                payload.affiliate_id,
-                payload.afiliado_id
-            ),
+            afiliado?.affiliate_id ||
+            null,
 
         afiliado_nome:
-            primeiroValor(
-                afiliado.name,
-                afiliado.nome,
-                payload.affiliate_name,
-                payload.afiliado_nome
-            ),
+            afiliado?.custom_name ||
+            null,
 
         origem:
             "kiwify",
 
         data_compra:
-            datas.data_compra,
+            dataCompra,
 
         data_pagamento:
-            datas.data_pagamento,
+            dataPagamento,
 
         descricao:
-            primeiroValor(
-                payload.descricao,
-                payload.description,
-                produto.oferta,
-                produto.nome
+            primeiro(
+                product.product_name,
+                "E-book"
             ),
 
         observacoes:
-            primeiroValor(
-                payload.observacoes,
-                payload.observations,
-                payload.note,
-                payload.notes
+            primeiro(
+                payload.webhook_event_type,
+                payload.order_status
             ),
 
         raw_payload:
@@ -752,30 +497,23 @@ function montarRegistro(payload) {
 }
 
 /* ============================================================
-   LOCALIZAR PEDIDO EXISTENTE
+   LOCALIZAR PEDIDO
 ============================================================ */
 
 async function localizarPedido(registro) {
-    if (!supabase) {
-        throw new Error(
-            "Supabase não configurado."
-        );
-    }
-
-    /*
-     * Prioridade:
-     * 1. order_id
-     * 2. transaction_id
-     * 3. kiwify_id
-     */
 
     if (registro.order_id) {
-        const { data, error } = await supabase
-            .from("ebook_pedidos")
-            .select("id")
-            .eq("order_id", registro.order_id)
-            .limit(1)
-            .maybeSingle();
+
+        const { data, error } =
+            await supabase
+                .from("ebook_pedidos")
+                .select("id")
+                .eq(
+                    "order_id",
+                    registro.order_id
+                )
+                .limit(1)
+                .maybeSingle();
 
         if (error) {
             throw error;
@@ -787,15 +525,17 @@ async function localizarPedido(registro) {
     }
 
     if (registro.transaction_id) {
-        const { data, error } = await supabase
-            .from("ebook_pedidos")
-            .select("id")
-            .eq(
-                "transaction_id",
-                registro.transaction_id
-            )
-            .limit(1)
-            .maybeSingle();
+
+        const { data, error } =
+            await supabase
+                .from("ebook_pedidos")
+                .select("id")
+                .eq(
+                    "transaction_id",
+                    registro.transaction_id
+                )
+                .limit(1)
+                .maybeSingle();
 
         if (error) {
             throw error;
@@ -807,15 +547,17 @@ async function localizarPedido(registro) {
     }
 
     if (registro.kiwify_id) {
-        const { data, error } = await supabase
-            .from("ebook_pedidos")
-            .select("id")
-            .eq(
-                "kiwify_id",
-                registro.kiwify_id
-            )
-            .limit(1)
-            .maybeSingle();
+
+        const { data, error } =
+            await supabase
+                .from("ebook_pedidos")
+                .select("id")
+                .eq(
+                    "kiwify_id",
+                    registro.kiwify_id
+                )
+                .limit(1)
+                .maybeSingle();
 
         if (error) {
             throw error;
@@ -830,20 +572,23 @@ async function localizarPedido(registro) {
 }
 
 /* ============================================================
-   SALVAR NO SUPABASE
+   SALVAR
 ============================================================ */
 
 async function salvarPedido(registro) {
+
     const idExistente =
         await localizarPedido(registro);
 
     if (idExistente) {
-        const { data, error } = await supabase
-            .from("ebook_pedidos")
-            .update(registro)
-            .eq("id", idExistente)
-            .select()
-            .single();
+
+        const { data, error } =
+            await supabase
+                .from("ebook_pedidos")
+                .update(registro)
+                .eq("id", idExistente)
+                .select()
+                .single();
 
         if (error) {
             throw error;
@@ -855,11 +600,12 @@ async function salvarPedido(registro) {
         };
     }
 
-    const { data, error } = await supabase
-        .from("ebook_pedidos")
-        .insert(registro)
-        .select()
-        .single();
+    const { data, error } =
+        await supabase
+            .from("ebook_pedidos")
+            .insert(registro)
+            .select()
+            .single();
 
     if (error) {
         throw error;
@@ -875,11 +621,10 @@ async function salvarPedido(registro) {
    HANDLER
 ============================================================ */
 
-module.exports = async function handler(req, res) {
-
-    /*
-     * CORS
-     */
+module.exports = async function handler(
+    req,
+    res
+) {
 
     res.setHeader(
         "Access-Control-Allow-Origin",
@@ -896,19 +641,16 @@ module.exports = async function handler(req, res) {
         "Content-Type"
     );
 
-    /*
-     * OPTIONS
-     */
-
     if (req.method === "OPTIONS") {
         return res.status(204).end();
     }
 
     /*
-     * GET = TESTE
+     * GET
      */
 
     if (req.method === "GET") {
+
         return res.status(200).json({
             ok: true,
             service: "kiwify-webhook",
@@ -924,10 +666,11 @@ module.exports = async function handler(req, res) {
     }
 
     /*
-     * Somente POST para receber eventos
+     * POST
      */
 
     if (req.method !== "POST") {
+
         return res.status(405).json({
             ok: false,
             error: "Método não permitido."
@@ -935,41 +678,31 @@ module.exports = async function handler(req, res) {
     }
 
     /*
-     * Verificar ambiente
+     * Ambiente
      */
 
-    if (
-        !SUPABASE_URL ||
-        !SUPABASE_SERVICE_ROLE_KEY
-    ) {
-        console.error(
-            "[KIWIFY] Variáveis do Supabase ausentes."
-        );
+    if (!supabase) {
 
         return res.status(500).json({
             ok: false,
             error:
-                "SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não configurada."
+                "Supabase não configurado."
         });
     }
 
     try {
 
-        const payload = req.body || {};
+        const payload =
+            req.body || {};
 
         console.log(
-            "[KIWIFY] Webhook recebido."
+            "[KIWIFY] Evento recebido:",
+            payload.webhook_event_type
         );
 
         console.log(
-            "[KIWIFY] Evento:",
-            primeiroValor(
-                payload.event,
-                payload.event_type,
-                payload.type,
-                payload.status,
-                "não informado"
-            )
+            "[KIWIFY] Pedido:",
+            payload.order_id
         );
 
         /*
@@ -979,89 +712,51 @@ module.exports = async function handler(req, res) {
         const registro =
             montarRegistro(payload);
 
-        /*
-         * Segurança mínima:
-         * precisa existir algum identificador.
-         */
-
-        if (
-            !registro.order_id &&
-            !registro.transaction_id &&
-            !registro.kiwify_id
-        ) {
-            console.warn(
-                "[KIWIFY] Nenhum identificador encontrado."
-            );
-
-            /*
-             * Ainda salvamos caso a Kiwify tenha enviado
-             * dados de cliente/venda.
-             */
-
-            if (
-                !registro.email &&
-                !registro.nome
-            ) {
-                return res.status(400).json({
-                    ok: false,
-                    error:
-                        "Webhook sem identificador ou dados do cliente."
-                });
+        console.log(
+            "[KIWIFY] Registro:",
+            {
+                nome: registro.nome,
+                email: registro.email,
+                telefone: registro.telefone,
+                documento:
+                    registro.documento,
+                produto:
+                    registro.produto_nome,
+                valor:
+                    registro.valor_total,
+                valor_pago:
+                    registro.valor_pago,
+                status:
+                    registro.status,
+                metodo:
+                    registro.metodo_pagamento,
+                order_id:
+                    registro.order_id
             }
-        }
+        );
 
         /*
          * Salvar
          */
 
         const resultado =
-            await salvarPedido(registro);
-
-        /*
-         * Log resumido
-         */
+            await salvarPedido(
+                registro
+            );
 
         console.log(
-            "[KIWIFY] Pedido salvo:",
-            {
-                action:
-                    resultado.action,
-
-                id:
-                    resultado.data?.id,
-
-                order_id:
-                    registro.order_id,
-
-                transaction_id:
-                    registro.transaction_id,
-
-                nome:
-                    registro.nome,
-
-                email:
-                    registro.email,
-
-                status:
-                    registro.status,
-
-                metodo_pagamento:
-                    registro.metodo_pagamento,
-
-                valor:
-                    registro.valor_total
-            }
+            "[KIWIFY] Salvo:",
+            resultado.action,
+            resultado.data?.id
         );
 
-        /*
-         * Resposta
-         */
-
         return res.status(200).json({
+
             ok: true,
 
             message:
-                resultado.action === "inserted"
+                resultado.action ===
+                "inserted"
                     ? "Pedido inserido no Supabase."
                     : "Pedido atualizado no Supabase.",
 
@@ -1069,13 +764,12 @@ module.exports = async function handler(req, res) {
                 resultado.action,
 
             pedido_id:
-                resultado.data?.id || null,
+                resultado.data?.id ||
+                null,
 
             order_id:
-                registro.order_id || null,
-
-            transaction_id:
-                registro.transaction_id || null,
+                registro.order_id ||
+                null,
 
             status:
                 registro.status,
@@ -1090,17 +784,12 @@ module.exports = async function handler(req, res) {
     } catch (error) {
 
         console.error(
-            "[KIWIFY] ERRO:"
+            "[KIWIFY] ERRO:",
+            error
         );
 
-        console.error({
-            message: error?.message,
-            details: error?.details,
-            hint: error?.hint,
-            code: error?.code
-        });
-
         return res.status(500).json({
+
             ok: false,
 
             error:
@@ -1108,13 +797,16 @@ module.exports = async function handler(req, res) {
                 "Erro ao processar webhook.",
 
             details:
-                error?.details || null,
+                error?.details ||
+                null,
 
             hint:
-                error?.hint || null,
+                error?.hint ||
+                null,
 
             code:
-                error?.code || null
+                error?.code ||
+                null
         });
     }
 };
