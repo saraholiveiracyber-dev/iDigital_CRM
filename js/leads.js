@@ -2,12 +2,27 @@
     "use strict";
 
     /* =========================================================
-       ESTADO
+       iDIGITAL CRM
+       LEADS & OPORTUNIDADES
+       SITE + KIWIFY + LEADS MANUAIS
+
+       VERSÃO CORRIGIDA
+
+       KIWIFY:
+       - Produtos
+       - PIX
+       - Boleto
+       - Cartão
+       - Pagamentos pagos
+       - Pagamentos em aberto
+       - Valores
+       - Saldo em aberto
+       - Status financeiro separado do CRM
+       - Não altera pagamento pelo pipeline
     ========================================================= */
 
     let oportunidades = [];
     let oportunidadeEditandoId = null;
-
 
     /* =========================================================
        DOM
@@ -39,7 +54,6 @@
 
     const saveBtn = $("saveLeadBtn");
 
-
     /* =========================================================
        SUPABASE
     ========================================================= */
@@ -47,7 +61,6 @@
     function obterSupabase() {
         return window.supabaseClient || null;
     }
-
 
     async function obterUsuario() {
         const supabase = obterSupabase();
@@ -72,7 +85,6 @@
             return data?.user || null;
 
         } catch (error) {
-
             console.warn(
                 "[CRM] Erro ao obter usuário:",
                 error
@@ -81,7 +93,6 @@
             return null;
         }
     }
-
 
     /* =========================================================
        HELPERS
@@ -96,7 +107,6 @@
             .replace(/'/g, "&#039;");
     }
 
-
     function normalizar(valor) {
         return String(valor ?? "")
             .normalize("NFD")
@@ -104,7 +114,6 @@
             .toLowerCase()
             .trim();
     }
-
 
     function campo(objeto, nomes, fallback = "") {
         for (const nome of nomes) {
@@ -121,14 +130,43 @@
         return fallback;
     }
 
+    function caminho(objeto, caminhos, fallback = "") {
+        for (const caminhoAtual of caminhos) {
+            const partes = caminhoAtual.split(".");
+            let atual = objeto;
+
+            for (const parte of partes) {
+                if (
+                    atual === null ||
+                    atual === undefined
+                ) {
+                    atual = undefined;
+                    break;
+                }
+
+                atual = atual[parte];
+            }
+
+            if (
+                atual !== undefined &&
+                atual !== null &&
+                String(atual).trim() !== ""
+            ) {
+                return atual;
+            }
+        }
+
+        return fallback;
+    }
 
     /* =========================================================
-       VALOR
+       VALORES
     ========================================================= */
 
     function valorNumero(valor) {
-
-        if (typeof valor === "number") {
+        if (
+            typeof valor === "number"
+        ) {
             return Number.isFinite(valor)
                 ? valor
                 : 0;
@@ -144,13 +182,8 @@
         }
 
         /*
-         * Exemplos:
-         *
-         * 1.500,50 -> 1500.50
-         * 1500,50  -> 1500.50
-         * 1500.50  -> 1500.50
+         * 1.500,50
          */
-
         if (
             texto.includes(".") &&
             texto.includes(",")
@@ -158,11 +191,21 @@
             texto = texto
                 .replace(/\./g, "")
                 .replace(",", ".");
-        } else if (texto.includes(",")) {
+        }
+
+        /*
+         * 1500,50
+         */
+        else if (
+            texto.includes(",")
+        ) {
             texto = texto.replace(",", ".");
         }
 
-        texto = texto.replace(/[^\d.-]/g, "");
+        texto = texto.replace(
+            /[^\d.-]/g,
+            ""
+        );
 
         const numero = Number(texto);
 
@@ -170,7 +213,6 @@
             ? numero
             : 0;
     }
-
 
     function formatarMoeda(valor) {
         return Number(valor || 0).toLocaleString(
@@ -182,10 +224,9 @@
         );
     }
 
-
     function formatarValorInput(valor) {
-
-        const numero = valorNumero(valor);
+        const numero =
+            valorNumero(valor);
 
         if (!numero) {
             return "";
@@ -200,13 +241,49 @@
         );
     }
 
+    /*
+     * Calcula o saldo real.
+     *
+     * Exemplo:
+     * valorTotal = 197
+     * valorPago = 0
+     * saldo = 197
+     *
+     * valorTotal = 197
+     * valorPago = 197
+     * saldo = 0
+     */
+
+    function calcularSaldo(item) {
+        const total = valorNumero(
+            item.valorTotal ??
+            item.valor ??
+            0
+        );
+
+        const pago = valorNumero(
+            item.valorPago ??
+            0
+        );
+
+        if (
+            pago > 0 &&
+            total > 0
+        ) {
+            return Math.max(
+                total - pago,
+                0
+            );
+        }
+
+        return total;
+    }
 
     /* =========================================================
        TEXTO
     ========================================================= */
 
     function obterIniciais(nome) {
-
         const partes =
             String(nome || "Cliente")
                 .trim()
@@ -229,32 +306,38 @@
         ).toUpperCase();
     }
 
-
     function formatarData(data) {
-
         if (!data) {
             return "—";
         }
 
         const objeto = new Date(data);
 
-        if (Number.isNaN(objeto.getTime())) {
+        if (
+            Number.isNaN(
+                objeto.getTime()
+            )
+        ) {
             return String(data);
         }
 
-        return objeto.toLocaleDateString("pt-BR");
+        return objeto.toLocaleDateString(
+            "pt-BR"
+        );
     }
 
-
     function formatarDataHora(data) {
-
         if (!data) {
             return "—";
         }
 
         const objeto = new Date(data);
 
-        if (Number.isNaN(objeto.getTime())) {
+        if (
+            Number.isNaN(
+                objeto.getTime()
+            )
+        ) {
             return String(data);
         }
 
@@ -270,9 +353,7 @@
         );
     }
 
-
     function definirTexto(id, valor) {
-
         const elemento = $(id);
 
         if (elemento) {
@@ -280,16 +361,14 @@
         }
     }
 
-
     /* =========================================================
-       STATUS
+       STATUS CRM
     ========================================================= */
 
     function normalizarStatus(
         status,
         fallback = "novo"
     ) {
-
         const valor =
             normalizar(status)
                 .replace(/-/g, "_")
@@ -315,6 +394,7 @@
                 "pendente",
                 "aguardando",
                 "pending",
+                "pendente_pagamento",
                 "aguardando_pagamento"
             ].includes(valor)
         ) {
@@ -345,6 +425,9 @@
                 "pago",
                 "aprovado",
                 "aprovada",
+                "payment_approved",
+                "pagamento_aprovado",
+                "completed",
                 "completo",
                 "completa"
             ].includes(valor)
@@ -360,7 +443,8 @@
                 "cancelled",
                 "refunded",
                 "reembolsado",
-                "reembolsada"
+                "reembolsada",
+                "chargeback"
             ].includes(valor)
         ) {
             return "cancelado";
@@ -369,9 +453,7 @@
         return fallback;
     }
 
-
     function nomeStatus(status) {
-
         const nomes = {
             novo: "Novo",
             pendente: "Pendente",
@@ -383,21 +465,18 @@
         return nomes[status] || "Novo";
     }
 
-
     function nomeTipo(tipo) {
-
         const nomes = {
             orcamento: "Orçamento",
             ebook: "Kiwify",
             lead: "Lead"
         };
 
-        return nomes[tipo] || "Oportunidade";
+        return nomes[tipo] ||
+            "Oportunidade";
     }
 
-
     function obterNomeOrigem(origem) {
-
         const nomes = {
             site: "Site",
             kiwify: "Kiwify",
@@ -416,12 +495,129 @@
             String(origem || "Outro");
     }
 
+    /* =========================================================
+       STATUS PAGAMENTO
+    ========================================================= */
+
+    function normalizarStatusPagamento(status) {
+        const valor =
+            normalizar(status)
+                .replace(/-/g, "_")
+                .replace(/\s+/g, "_");
+
+        if (
+            [
+                "paid",
+                "pago",
+                "approved",
+                "aprovado",
+                "aprovada",
+                "completed",
+                "complete",
+                "completo",
+                "completa",
+                "confirmed",
+                "confirmado",
+                "payment_approved",
+                "pagamento_aprovado",
+                "paid_approved",
+                "success",
+                "sucesso"
+            ].includes(valor)
+        ) {
+            return "pago";
+        }
+
+        if (
+            [
+                "cancelled",
+                "canceled",
+                "cancelado",
+                "cancelada",
+                "refunded",
+                "reembolsado",
+                "reembolsada",
+                "chargeback",
+                "chargedback"
+            ].includes(valor)
+        ) {
+            return "cancelado";
+        }
+
+        return "pendente";
+    }
+
+    function nomeStatusPagamento(status) {
+        const nomes = {
+            pago: "Pago",
+            pendente: "Em aberto",
+            cancelado: "Cancelado"
+        };
+
+        return nomes[status] ||
+            "Em aberto";
+    }
 
     /* =========================================================
-       NORMALIZAÇÃO - ORÇAMENTO
+       MÉTODO DE PAGAMENTO
+    ========================================================= */
+
+    function normalizarMetodoPagamento(metodo) {
+        const valor =
+            normalizar(metodo);
+
+        if (
+            valor.includes("pix")
+        ) {
+            return "PIX";
+        }
+
+        if (
+            valor.includes("boleto") ||
+            valor.includes("bank_slip") ||
+            valor.includes("bank slip")
+        ) {
+            return "Boleto";
+        }
+
+        if (
+            valor.includes("credit") ||
+            valor.includes("credito") ||
+            valor.includes("card") ||
+            valor.includes("cartao")
+        ) {
+            return "Cartão";
+        }
+
+        if (
+            valor.includes("debit") ||
+            valor.includes("debito")
+        ) {
+            return "Débito";
+        }
+
+        return metodo
+            ? String(metodo)
+            : "Não informado";
+    }
+
+    /* =========================================================
+       ORÇAMENTO
     ========================================================= */
 
     function normalizarOrcamento(item) {
+        const valor =
+            valorNumero(
+                campo(
+                    item,
+                    [
+                        "valor",
+                        "valor_total",
+                        "valor_estimado"
+                    ],
+                    0
+                )
+            );
 
         return {
             id: `orcamento-${item.id}`,
@@ -478,17 +674,13 @@
                 )
             ),
 
-            valor: valorNumero(
-                campo(
-                    item,
-                    [
-                        "valor",
-                        "valor_total",
-                        "valor_estimado"
-                    ],
-                    0
-                )
-            ),
+            valor,
+
+            valorPago: 0,
+
+            valorTotal: valor,
+
+            saldoAberto: valor,
 
             status: normalizarStatus(
                 campo(
@@ -498,6 +690,12 @@
                 ),
                 "novo"
             ),
+
+            statusPagamento: null,
+
+            statusPagamentoLabel: null,
+
+            metodoPagamento: null,
 
             origem: "site",
 
@@ -523,25 +721,25 @@
                 )
             ),
 
-            created_at: campo(
-                item,
-                ["created_at"],
-                ""
-            ),
+            created_at:
+                campo(
+                    item,
+                    ["created_at"],
+                    ""
+                ),
 
             raw: item
         };
     }
 
-
     /* =========================================================
-       NORMALIZAÇÃO - KIWIFY
+       KIWIFY
     ========================================================= */
 
     function normalizarKiwify(item) {
 
         /*
-         * Produto
+         * PRODUTO
          */
 
         const produtoNome =
@@ -562,7 +760,6 @@
                 )
             );
 
-
         const produtoId =
             String(
                 campo(
@@ -570,17 +767,26 @@
                     [
                         "produto_id",
                         "product_id",
-                        "id_produto",
-                        "product_code",
-                        "produto_codigo"
+                        "id_produto"
                     ],
                     ""
                 )
             );
 
+        const produtoCodigo =
+            String(
+                campo(
+                    item,
+                    [
+                        "produto_codigo",
+                        "product_code"
+                    ],
+                    ""
+                )
+            );
 
         /*
-         * Cliente
+         * CLIENTE
          */
 
         const nome =
@@ -598,7 +804,6 @@
                 )
             );
 
-
         const email =
             String(
                 campo(
@@ -611,7 +816,6 @@
                     ""
                 )
             );
-
 
         const telefone =
             String(
@@ -628,106 +832,218 @@
                 )
             );
 
-
         /*
-         * Valor
+         * =====================================================
+         * VALOR TOTAL
+         * =====================================================
          *
          * Prioridade:
          *
-         * valor
-         * valor_pago
          * valor_total
+         * valor
          * valor_produto
-         * price
          * amount
-         * purchase_amount
          */
 
-        let valor = valorNumero(
-            campo(
-                item,
-                [
-                    "valor",
-                    "valor_pago",
-                    "valor_total",
-                    "valor_produto",
-                    "preco",
-                    "preco_produto",
-                    "price",
-                    "amount",
-                    "purchase_amount",
-                    "total"
-                ],
-                0
-            )
-        );
-
+        const valorTotal =
+            valorNumero(
+                campo(
+                    item,
+                    [
+                        "valor_total",
+                        "valor",
+                        "valor_produto",
+                        "preco",
+                        "price",
+                        "amount",
+                        "purchase_amount",
+                        "total"
+                    ],
+                    0
+                )
+            );
 
         /*
-         * Se o valor vier em centavos.
-         *
-         * Exemplo:
-         * 5000 -> R$ 50,00
-         * 19700 -> R$ 197,00
+         * =====================================================
+         * VALOR PAGO
+         * =====================================================
          */
 
-        if (
-            Number.isInteger(valor) &&
-            valor >= 1000 &&
-            valor % 100 === 0
-        ) {
-            valor = valor / 100;
-        }
-
+        let valorPago =
+            valorNumero(
+                campo(
+                    item,
+                    [
+                        "valor_pago",
+                        "valor_total_pago",
+                        "paid_amount"
+                    ],
+                    0
+                )
+            );
 
         /*
-         * Status
+         * Se o pedido está pago e valor_pago
+         * não veio preenchido, usamos o total.
+         */
+
+        /*
+         * =====================================================
+         * VALOR LÍQUIDO
+         * =====================================================
+         */
+
+        const valorLiquido =
+            valorNumero(
+                campo(
+                    item,
+                    [
+                        "valor_liquido",
+                        "net_amount"
+                    ],
+                    0
+                )
+            );
+
+        /*
+         * =====================================================
+         * STATUS PAGAMENTO
+         * =====================================================
          */
 
         const statusOriginal =
-            campo(
-                item,
-                ["status"],
-                "pendente"
+            String(
+                campo(
+                    item,
+                    [
+                        "status",
+                        "status_pagamento",
+                        "payment_status"
+                    ],
+                    "pendente"
+                )
             );
 
-        const statusTexto =
-            normalizar(statusOriginal)
-                .replace(/-/g, "_")
-                .replace(/\s+/g, "_");
-
-
-        let status =
-            normalizarStatus(
-                statusOriginal,
-                "pendente"
+        const statusPagamento =
+            normalizarStatusPagamento(
+                statusOriginal
             );
-
 
         /*
-         * Vendas pagas da Kiwify
-         * entram como oportunidade concluída.
+         * Pedido pago sem valor_pago:
+         * considera valor total como pago.
          */
 
         if (
-            [
-                "paid",
-                "pago",
-                "aprovado",
-                "aprovada",
-                "payment_approved",
-                "pagamento_aprovado",
-                "completed",
-                "completo",
-                "completa"
-            ].includes(statusTexto)
+            statusPagamento === "pago" &&
+            valorPago <= 0
+        ) {
+            valorPago = valorTotal;
+        }
+
+        /*
+         * =====================================================
+         * SALDO EM ABERTO
+         * =====================================================
+         */
+
+        const saldoAberto =
+            statusPagamento === "pendente"
+                ? Math.max(
+                    valorTotal - valorPago,
+                    0
+                )
+                : 0;
+
+        /*
+         * =====================================================
+         * STATUS CRM
+         * =====================================================
+         */
+
+        let status = "pendente";
+
+        if (
+            statusPagamento === "pago"
         ) {
             status = "fechado";
         }
 
+        if (
+            statusPagamento === "cancelado"
+        ) {
+            status = "cancelado";
+        }
 
         /*
-         * Datas
+         * =====================================================
+         * MÉTODO PAGAMENTO
+         * =====================================================
+         */
+
+        const metodoOriginal =
+            campo(
+                item,
+                [
+                    "metodo_pagamento",
+                    "payment_method",
+                    "payment_type",
+                    "metodo",
+                    "forma_pagamento"
+                ],
+                ""
+            );
+
+        const metodoPagamento =
+            normalizarMetodoPagamento(
+                metodoOriginal
+            );
+
+        /*
+         * =====================================================
+         * IDENTIFICADORES
+         * =====================================================
+         */
+
+        const transactionId =
+            String(
+                campo(
+                    item,
+                    [
+                        "transaction_id",
+                        "kiwify_transaction_id"
+                    ],
+                    ""
+                )
+            );
+
+        const orderId =
+            String(
+                campo(
+                    item,
+                    [
+                        "order_id",
+                        "kiwify_order_id"
+                    ],
+                    ""
+                )
+            );
+
+        const kiwifyId =
+            String(
+                campo(
+                    item,
+                    [
+                        "kiwify_id"
+                    ],
+                    ""
+                )
+            );
+
+        /*
+         * =====================================================
+         * DATAS
+         * =====================================================
          */
 
         const dataCompra =
@@ -741,7 +1057,6 @@
                 ""
             );
 
-
         const dataPagamento =
             campo(
                 item,
@@ -753,61 +1068,127 @@
                 ""
             );
 
-
         /*
-         * Pedido
+         * =====================================================
+         * LINK PAGAMENTO
+         * =====================================================
          */
 
-        const pedidoId =
+        const paymentUrl =
             String(
                 campo(
                     item,
                     [
-                        "transaction_id",
-                        "kiwify_id",
-                        "order_id",
-                        "kiwify_order_id",
-                        "order"
+                        "payment_url",
+                        "checkout_url",
+                        "payment_link",
+                        "url_pagamento"
                     ],
                     ""
                 )
             );
 
+        /*
+         * =====================================================
+         * OBSERVAÇÕES
+         * =====================================================
+         */
+
+        const observacoes = [
+            item.descricao
+                ? `Descrição: ${item.descricao}`
+                : "",
+
+            produtoCodigo
+                ? `Código: ${produtoCodigo}`
+                : "",
+
+            metodoPagamento &&
+            metodoPagamento !==
+                "Não informado"
+                ? `Pagamento: ${metodoPagamento}`
+                : "",
+
+            item.parcelas
+                ? `Parcelas: ${item.parcelas}`
+                : "",
+
+            statusPagamento === "pago"
+                ? "Pagamento confirmado"
+                : statusPagamento === "pendente"
+                    ? "Pagamento em aberto"
+                    : "Pagamento cancelado",
+
+            item.afiliado_nome
+                ? `Afiliado: ${item.afiliado_nome}`
+                : ""
+        ]
+            .filter(Boolean)
+            .join("\n");
+
+        /*
+         * =====================================================
+         * RETORNO
+         * =====================================================
+         */
 
         return {
 
-            id: `kiwify-${item.id}`,
+            id:
+                `kiwify-${item.id}`,
 
-            origemId: item.id,
+            origemId:
+                item.id,
 
-            bancoId: item.id,
+            bancoId:
+                item.id,
 
-            tipo: "ebook",
+            tipo:
+                "ebook",
 
             nome,
 
             email,
 
-            contato: telefone,
+            contato:
+                telefone,
 
-            /*
-             * Aqui aparece o produto REAL
-             * vendido na Kiwify.
-             */
-
-            servico: produtoNome,
+            servico:
+                produtoNome,
 
             produtoNome,
 
             produtoId,
 
-            valor,
+            produtoCodigo,
+
+            valor:
+                valorTotal,
+
+            valorPago,
+
+            valorTotal,
+
+            valorLiquido,
+
+            saldoAberto,
 
             status,
 
-            origem: "kiwify",
+            statusPagamento,
 
-            origemLabel: "Kiwify",
+            statusPagamentoLabel:
+                nomeStatusPagamento(
+                    statusPagamento
+                ),
+
+            metodoPagamento,
+
+            origem:
+                "kiwify",
+
+            origemLabel:
+                "Kiwify",
 
             plano:
                 campo(
@@ -821,58 +1202,45 @@
                 ),
 
             payment_url:
-                campo(
-                    item,
-                    [
-                        "payment_url",
-                        "checkout_url",
-                        "payment_link"
-                    ],
-                    ""
-                ),
+                paymentUrl,
+
+            transaction_id:
+                transactionId,
+
+            order_id:
+                orderId,
+
+            kiwify_id:
+                kiwifyId,
 
             kiwify_order_id:
-                pedidoId,
+                orderId ||
+                transactionId ||
+                kiwifyId,
 
             paid_at:
-                dataPagamento || null,
+                dataPagamento ||
+                null,
 
             data_compra:
-                dataCompra || null,
+                dataCompra ||
+                null,
 
-            observacoes: [
-                item.descricao
-                    ? `Descrição: ${item.descricao}`
-                    : "",
+            data_pagamento:
+                dataPagamento ||
+                null,
 
-                item.produto_codigo
-                    ? `Código do produto: ${item.produto_codigo}`
-                    : "",
-
-                item.metodo_pagamento
-                    ? `Pagamento: ${item.metodo_pagamento}`
-                    : "",
-
-                item.parcelas
-                    ? `Parcelas: ${item.parcelas}`
-                    : "",
-
-                item.afiliado_nome
-                    ? `Afiliado: ${item.afiliado_nome}`
-                    : ""
-            ]
-                .filter(Boolean)
-                .join("\n"),
+            observacoes,
 
             created_at:
                 item.created_at ||
                 dataCompra ||
                 "",
 
-            raw: item
+            raw:
+                item
         };
     }
-
 
     /* =========================================================
        COMPATIBILIDADE
@@ -882,9 +1250,8 @@
         return normalizarKiwify(item);
     }
 
-
     /* =========================================================
-       NORMALIZAÇÃO - LEAD MANUAL
+       LEAD MANUAL
     ========================================================= */
 
     function normalizarLead(item) {
@@ -899,70 +1266,14 @@
                 "novo"
             );
 
-
         const status =
             normalizarStatus(
                 etapaOriginal,
                 "novo"
             );
 
-
-        return {
-
-            id: `lead-${item.id}`,
-
-            origemId: item.id,
-
-            bancoId: item.id,
-
-            tipo: "lead",
-
-            nome: String(
-                campo(
-                    item,
-                    [
-                        "nome",
-                        "cliente",
-                        "nome_cliente"
-                    ],
-                    "Lead"
-                )
-            ),
-
-            email: String(
-                campo(
-                    item,
-                    ["email"],
-                    ""
-                )
-            ),
-
-            contato: String(
-                campo(
-                    item,
-                    [
-                        "contato",
-                        "telefone",
-                        "whatsapp"
-                    ],
-                    ""
-                )
-            ),
-
-            servico: String(
-                campo(
-                    item,
-                    [
-                        "servico",
-                        "servicos",
-                        "projeto",
-                        "tipo_servico"
-                    ],
-                    "Projeto"
-                )
-            ),
-
-            valor: valorNumero(
+        const valor =
+            valorNumero(
                 campo(
                     item,
                     [
@@ -972,9 +1283,86 @@
                     ],
                     0
                 )
-            ),
+            );
+
+        return {
+
+            id:
+                `lead-${item.id}`,
+
+            origemId:
+                item.id,
+
+            bancoId:
+                item.id,
+
+            tipo:
+                "lead",
+
+            nome:
+                String(
+                    campo(
+                        item,
+                        [
+                            "nome",
+                            "cliente",
+                            "nome_cliente"
+                        ],
+                        "Lead"
+                    )
+                ),
+
+            email:
+                String(
+                    campo(
+                        item,
+                        ["email"],
+                        ""
+                    )
+                ),
+
+            contato:
+                String(
+                    campo(
+                        item,
+                        [
+                            "contato",
+                            "telefone",
+                            "whatsapp"
+                        ],
+                        ""
+                    )
+                ),
+
+            servico:
+                String(
+                    campo(
+                        item,
+                        [
+                            "servico",
+                            "servicos",
+                            "projeto",
+                            "tipo_servico"
+                        ],
+                        "Projeto"
+                    )
+                ),
+
+            valor,
+
+            valorPago: 0,
+
+            valorTotal: valor,
+
+            saldoAberto: valor,
 
             status,
+
+            statusPagamento: null,
+
+            statusPagamentoLabel: null,
+
+            metodoPagamento: null,
 
             etapa:
                 campo(
@@ -999,28 +1387,31 @@
                     )
                 ),
 
-            observacoes: String(
-                campo(
-                    item,
-                    [
-                        "observacoes",
-                        "observacao",
-                        "mensagem"
-                    ],
-                    ""
-                )
-            ),
+            observacoes:
+                String(
+                    campo(
+                        item,
+                        [
+                            "observacoes",
+                            "observacao",
+                            "mensagem"
+                        ],
+                        ""
+                    )
+                ),
 
             user_id:
-                item.user_id || null,
+                item.user_id ||
+                null,
 
             created_at:
-                item.created_at || "",
+                item.created_at ||
+                "",
 
-            raw: item
+            raw:
+                item
         };
     }
-
 
     /* =========================================================
        BUSCAR ORÇAMENTOS
@@ -1037,8 +1428,10 @@
             );
         }
 
-
-        const { data, error } =
+        const {
+            data,
+            error
+        } =
             await supabase
                 .from("orcamentos")
                 .select("*")
@@ -1049,15 +1442,17 @@
                     }
                 );
 
-
         if (error) {
             throw error;
         }
 
+        console.log(
+            "[CRM] Orçamentos encontrados:",
+            data?.length || 0
+        );
 
         return data || [];
     }
-
 
     /* =========================================================
        BUSCAR KIWIFY
@@ -1074,21 +1469,14 @@
             );
         }
 
+        console.log(
+            "[CRM] Consultando ebook_pedidos..."
+        );
 
-        /*
-         * Busca TODOS os registros.
-         *
-         * Não usamos:
-         *
-         * limit
-         * single
-         * maybeSingle
-         *
-         * Portanto cada venda vira uma
-         * oportunidade separada.
-         */
-
-        const { data, error } =
+        const {
+            data,
+            error
+        } =
             await supabase
                 .from("ebook_pedidos")
                 .select("*")
@@ -1099,38 +1487,84 @@
                     }
                 );
 
-
         if (error) {
+
+            console.error(
+                "[CRM] ERRO KIWIFY / SUPABASE:",
+                error
+            );
+
             throw error;
         }
-
 
         console.log(
             "[CRM] Vendas Kiwify encontradas:",
             data?.length || 0
         );
 
+        if (
+            data &&
+            data.length
+        ) {
 
-        console.table(
-            (data || []).map(item => ({
-                id: item.id,
-                produto:
-                    item.produto_nome ||
-                    item.nome_produto ||
-                    item.produto ||
-                    item.product_name,
-                valor:
-                    item.valor ||
-                    item.valor_pago ||
-                    item.valor_total,
-                status: item.status
-            }))
-        );
+            console.table(
+                data.map(
+                    item => {
 
+                        const normalizado =
+                            normalizarKiwify(
+                                item
+                            );
+
+                        return {
+
+                            id:
+                                item.id,
+
+                            produto:
+                                normalizado.produtoNome,
+
+                            cliente:
+                                normalizado.nome,
+
+                            valor:
+                                normalizado.valor,
+
+                            pago:
+                                normalizado.valorPago,
+
+                            aberto:
+                                normalizado.saldoAberto,
+
+                            status:
+                                normalizado.statusPagamento,
+
+                            metodo:
+                                normalizado.metodoPagamento,
+
+                            order_id:
+                                normalizado.order_id,
+
+                            transaction_id:
+                                normalizado.transaction_id
+                        };
+                    }
+                )
+            );
+
+        } else {
+
+            console.warn(
+                "[CRM] A tabela ebook_pedidos retornou ZERO registros."
+            );
+
+            console.warn(
+                "[CRM] Verifique se existem vendas na tabela Supabase."
+            );
+        }
 
         return data || [];
     }
-
 
     /* =========================================================
        BUSCAR LEADS MANUAIS
@@ -1145,7 +1579,6 @@
             return [];
         }
 
-
         let query =
             supabase
                 .from("leads")
@@ -1157,12 +1590,13 @@
                     }
                 );
 
-
         const usuario =
             await obterUsuario();
 
+        if (
+            usuario?.id
+        ) {
 
-        if (usuario?.id) {
             query =
                 query.eq(
                     "user_id",
@@ -1170,10 +1604,11 @@
                 );
         }
 
-
-        const { data, error } =
+        const {
+            data,
+            error
+        } =
             await query;
-
 
         if (error) {
 
@@ -1185,10 +1620,13 @@
             return [];
         }
 
+        console.log(
+            "[CRM] Leads manuais encontrados:",
+            data?.length || 0
+        );
 
         return data || [];
     }
-
 
     /* =========================================================
        CARREGAR OPORTUNIDADES
@@ -1199,7 +1637,6 @@
         const supabase =
             obterSupabase();
 
-
         if (!supabase) {
 
             console.error(
@@ -1209,14 +1646,11 @@
             return;
         }
 
-
         mostrarCarregando();
-
 
         let orcamentos = [];
         let ebooks = [];
         let leads = [];
-
 
         try {
 
@@ -1231,7 +1665,6 @@
             );
         }
 
-
         try {
 
             ebooks =
@@ -1244,7 +1677,6 @@
                 error
             );
         }
-
 
         try {
 
@@ -1259,14 +1691,6 @@
             );
         }
 
-
-        /*
-         * IMPORTANTE:
-         *
-         * Cada registro da Kiwify
-         * permanece separado.
-         */
-
         oportunidades = [
 
             ...orcamentos.map(
@@ -1280,9 +1704,7 @@
             ...leads.map(
                 normalizarLead
             )
-
         ];
-
 
         oportunidades.sort(
             (a, b) => {
@@ -1301,43 +1723,96 @@
             }
         );
 
+        console.log(
+            "[CRM] =================================="
+        );
 
         console.log(
-            "[CRM] Total de oportunidades:",
+            "[CRM] TOTAL OPORTUNIDADES:",
             oportunidades.length
         );
 
-
-        console.log(
-            "[CRM] Total Kiwify:",
+        const kiwify =
             oportunidades.filter(
                 item =>
                     item.tipo === "ebook"
-            ).length
-        );
-
+            );
 
         console.log(
-            "[CRM] Valor Kiwify:",
-            oportunidades
-                .filter(
-                    item =>
-                        item.tipo === "ebook"
-                )
-                .reduce(
+            "[CRM] TOTAL KIWIFY:",
+            kiwify.length
+        );
+
+        const pago =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "pago"
+            );
+
+        const aberto =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "pendente"
+            );
+
+        const cancelado =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "cancelado"
+            );
+
+        console.log(
+            "[CRM] KIWIFY PAGOS:",
+            pago.length
+        );
+
+        console.log(
+            "[CRM] KIWIFY EM ABERTO:",
+            aberto.length
+        );
+
+        console.log(
+            "[CRM] KIWIFY CANCELADOS:",
+            cancelado.length
+        );
+
+        console.log(
+            "[CRM] VALOR KIWIFY PAGO:",
+            formatarMoeda(
+                pago.reduce(
                     (total, item) =>
                         total +
                         valorNumero(
-                            item.valor
+                            item.valorPago
                         ),
                     0
                 )
+            )
         );
 
+        console.log(
+            "[CRM] VALOR KIWIFY ABERTO:",
+            formatarMoeda(
+                aberto.reduce(
+                    (total, item) =>
+                        total +
+                        valorNumero(
+                            item.saldoAberto
+                        ),
+                    0
+                )
+            )
+        );
+
+        console.log(
+            "[CRM] =================================="
+        );
 
         atualizarTudo();
     }
-
 
     /* =========================================================
        LOADING
@@ -1349,11 +1824,9 @@
             return;
         }
 
-
         emptyState?.classList.add(
             "hidden"
         );
-
 
         tableBody.innerHTML = `
             <tr>
@@ -1369,7 +1842,6 @@
         `;
     }
 
-
     /* =========================================================
        ESTATÍSTICAS
     ========================================================= */
@@ -1379,150 +1851,301 @@
         const total =
             oportunidades.length;
 
-
         const orcamentos =
             oportunidades.filter(
                 item =>
-                    item.tipo === "orcamento"
+                    item.tipo ===
+                    "orcamento"
             ).length;
-
 
         const ebooks =
             oportunidades.filter(
                 item =>
-                    item.tipo === "ebook"
+                    item.tipo ===
+                    "ebook"
             ).length;
-
 
         const novos =
             oportunidades.filter(
                 item =>
-                    item.status === "novo"
+                    item.status ===
+                    "novo"
             ).length;
-
 
         const pendentes =
             oportunidades.filter(
                 item =>
-                    item.status === "pendente"
+                    item.status ===
+                    "pendente"
             ).length;
-
 
         const andamento =
             oportunidades.filter(
                 item =>
-                    item.status === "em_andamento"
+                    item.status ===
+                    "em_andamento"
             ).length;
-
 
         const fechados =
             oportunidades.filter(
                 item =>
-                    item.status === "fechado"
+                    item.status ===
+                    "fechado"
             ).length;
-
 
         const cancelados =
             oportunidades.filter(
                 item =>
-                    item.status === "cancelado"
+                    item.status ===
+                    "cancelado"
             ).length;
 
-
         /*
-         * SOMA TODAS AS OPORTUNIDADES
+         * =====================================================
+         * VALOR TOTAL DAS OPORTUNIDADES
+         * =====================================================
          */
 
         const valor =
             oportunidades
                 .filter(
                     item =>
-                        item.status !== "cancelado"
+                        item.status !==
+                        "cancelado"
                 )
                 .reduce(
-                    (totalAtual, item) =>
+                    (
+                        totalAtual,
+                        item
+                    ) =>
                         totalAtual +
                         valorNumero(
                             item.valor
                         ),
                     0
                 );
-
 
         /*
-         * SOMA SOMENTE KIWIFY
+         * =====================================================
+         * KIWIFY
+         * =====================================================
          */
 
-        const valorKiwify =
-            oportunidades
+        const kiwify =
+            oportunidades.filter(
+                item =>
+                    item.tipo ===
+                    "ebook"
+            );
+
+        /*
+         * TOTAL GERADO
+         */
+
+        const valorKiwifyTotal =
+            kiwify
                 .filter(
                     item =>
-                        item.tipo === "ebook" &&
-                        item.status !== "cancelado"
+                        item.statusPagamento !==
+                        "cancelado"
                 )
                 .reduce(
-                    (totalAtual, item) =>
+                    (
+                        totalAtual,
+                        item
+                    ) =>
                         totalAtual +
                         valorNumero(
+                            item.valorTotal ??
                             item.valor
                         ),
                     0
                 );
 
+        /*
+         * TOTAL PAGO
+         */
+
+        const valorKiwifyPago =
+            kiwify
+                .filter(
+                    item =>
+                        item.statusPagamento ===
+                        "pago"
+                )
+                .reduce(
+                    (
+                        totalAtual,
+                        item
+                    ) =>
+                        totalAtual +
+                        valorNumero(
+                            item.valorPago ||
+                            item.valor
+                        ),
+                    0
+                );
+
+        /*
+         * TOTAL EM ABERTO
+         */
+
+        const valorKiwifyAberto =
+            kiwify
+                .filter(
+                    item =>
+                        item.statusPagamento ===
+                        "pendente"
+                )
+                .reduce(
+                    (
+                        totalAtual,
+                        item
+                    ) =>
+                        totalAtual +
+                        valorNumero(
+                            item.saldoAberto ??
+                            item.valor
+                        ),
+                    0
+                );
+
+        /*
+         * =====================================================
+         * PIX EM ABERTO
+         * =====================================================
+         */
+
+        const pixAbertos =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "pendente" &&
+                    normalizar(
+                        item.metodoPagamento
+                    ) === "pix"
+            );
+
+        const valorPixAberto =
+            pixAbertos.reduce(
+                (
+                    totalAtual,
+                    item
+                ) =>
+                    totalAtual +
+                    valorNumero(
+                        item.saldoAberto ??
+                        item.valor
+                    ),
+                0
+            );
+
+        /*
+         * =====================================================
+         * BOLETO EM ABERTO
+         * =====================================================
+         */
+
+        const boletosAbertos =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "pendente" &&
+                    normalizar(
+                        item.metodoPagamento
+                    ) === "boleto"
+            );
+
+        const valorBoletoAberto =
+            boletosAbertos.reduce(
+                (
+                    totalAtual,
+                    item
+                ) =>
+                    totalAtual +
+                    valorNumero(
+                        item.saldoAberto ??
+                        item.valor
+                    ),
+                0
+            );
+
+        /*
+         * =====================================================
+         * CONTADORES KIWIFY
+         * =====================================================
+         */
+
+        const pixCount =
+            pixAbertos.length;
+
+        const boletoCount =
+            boletosAbertos.length;
+
+        const kiwifyPagoCount =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "pago"
+            ).length;
+
+        const kiwifyAbertoCount =
+            kiwify.filter(
+                item =>
+                    item.statusPagamento ===
+                    "pendente"
+            ).length;
+
+        /*
+         * =====================================================
+         * HTML PRINCIPAL
+         * =====================================================
+         */
 
         definirTexto(
             "totalOrcamentosSite",
             orcamentos
         );
 
-
         definirTexto(
             "totalEbookPedidos",
             ebooks
         );
-
 
         definirTexto(
             "totalPendentes",
             pendentes
         );
 
-
         definirTexto(
             "valorOportunidades",
             formatarMoeda(valor)
         );
-
 
         definirTexto(
             "pipelineNovo",
             novos
         );
 
-
         definirTexto(
             "pipelinePendente",
             pendentes
         );
-
 
         definirTexto(
             "pipelineAndamento",
             andamento
         );
 
-
         definirTexto(
             "pipelineFechado",
             fechados
         );
 
-
         definirTexto(
             "pipelineCancelado",
             cancelados
         );
-
 
         definirTexto(
             "pipelineCount",
@@ -1533,18 +2156,67 @@
             }`
         );
 
-
         /*
-         * Caso exista um contador específico
-         * para Kiwify.
+         * =====================================================
+         * CAMPOS KIWIFY
+         * =====================================================
          */
 
         definirTexto(
             "valorKiwify",
-            formatarMoeda(valorKiwify)
+            formatarMoeda(
+                valorKiwifyTotal
+            )
+        );
+
+        definirTexto(
+            "kiwifyPago",
+            formatarMoeda(
+                valorKiwifyPago
+            )
+        );
+
+        definirTexto(
+            "kiwifyAberto",
+            formatarMoeda(
+                valorKiwifyAberto
+            )
+        );
+
+        definirTexto(
+            "kiwifyPixAberto",
+            formatarMoeda(
+                valorPixAberto
+            )
+        );
+
+        definirTexto(
+            "kiwifyBoletoAberto",
+            formatarMoeda(
+                valorBoletoAberto
+            )
+        );
+
+        definirTexto(
+            "kiwifyPixCount",
+            pixCount
+        );
+
+        definirTexto(
+            "kiwifyBoletoCount",
+            boletoCount
+        );
+
+        definirTexto(
+            "kiwifyPagoCount",
+            kiwifyPagoCount
+        );
+
+        definirTexto(
+            "kiwifyAbertoCount",
+            kiwifyAbertoCount
         );
     }
-
 
     /* =========================================================
        TABELA
@@ -1558,7 +2230,6 @@
             return;
         }
 
-
         if (resultCount) {
 
             resultCount.textContent =
@@ -1569,9 +2240,7 @@
                 }`;
         }
 
-
         tableBody.innerHTML = "";
-
 
         if (!dados.length) {
 
@@ -1582,11 +2251,9 @@
             return;
         }
 
-
         emptyState?.classList.add(
             "hidden"
         );
-
 
         dados.forEach(
             oportunidade => {
@@ -1596,36 +2263,30 @@
                         "tr"
                     );
 
-
                 const nome =
                     escapar(
                         oportunidade.nome
                     );
-
 
                 const email =
                     escapar(
                         oportunidade.email
                     );
 
-
                 const contato =
                     escapar(
                         oportunidade.contato
                     );
-
 
                 const servico =
                     escapar(
                         oportunidade.servico
                     );
 
-
                 const origem =
                     escapar(
                         oportunidade.origemLabel
                     );
-
 
                 const iniciais =
                     escapar(
@@ -1634,22 +2295,24 @@
                         )
                     );
 
-
                 const status =
                     oportunidade.status;
-
 
                 const id =
                     escapar(
                         oportunidade.id
                     );
 
-
                 const origemId =
                     escapar(
                         oportunidade.origemId
                     );
 
+                /*
+                 * =================================================
+                 * WHATSAPP
+                 * =================================================
+                 */
 
                 const whatsapp =
                     oportunidade.contato
@@ -1661,14 +2324,20 @@
                                 data-id="${id}"
                                 title="Abrir WhatsApp"
                             >
-                                ☎
+                                WhatsApp
                             </button>
                         `
                         : "";
 
+                /*
+                 * =================================================
+                 * PAGAMENTO
+                 * =================================================
+                 */
 
                 const pagamento =
-                    oportunidade.tipo === "ebook" &&
+                    oportunidade.tipo ===
+                        "ebook" &&
                     oportunidade.payment_url
                         ? `
                             <button
@@ -1678,14 +2347,20 @@
                                 data-id="${id}"
                                 title="Abrir pagamento"
                             >
-                                $
+                                Pagar
                             </button>
                         `
                         : "";
 
+                /*
+                 * =================================================
+                 * EDITAR
+                 * =================================================
+                 */
 
                 const editar =
-                    oportunidade.tipo === "lead"
+                    oportunidade.tipo ===
+                        "lead"
                         ? `
                             <button
                                 type="button"
@@ -1694,7 +2369,7 @@
                                 data-id="${origemId}"
                                 title="Editar lead"
                             >
-                                ✎
+                                Editar
                             </button>
 
                             <button
@@ -1704,7 +2379,7 @@
                                 data-id="${origemId}"
                                 title="Excluir lead"
                             >
-                                ×
+                                Excluir
                             </button>
                         `
                         : `
@@ -1715,14 +2390,202 @@
                                 data-id="${id}"
                                 title="Ver detalhes"
                             >
-                                ◉
+                                Ver
                             </button>
                         `;
 
+                /*
+                 * =================================================
+                 * BLOCO FINANCEIRO KIWIFY
+                 * =================================================
+                 */
+
+                let financeiro = "";
+
+                if (
+                    oportunidade.tipo ===
+                    "ebook"
+                ) {
+
+                    const pagamentoStatus =
+                        oportunidade.statusPagamento ||
+                        "pendente";
+
+                    const pagamentoLabel =
+                        oportunidade.statusPagamentoLabel ||
+                        nomeStatusPagamento(
+                            pagamentoStatus
+                        );
+
+                    const metodo =
+                        escapar(
+                            oportunidade.metodoPagamento ||
+                            "Não informado"
+                        );
+
+                    const saldo =
+                        calcularSaldo(
+                            oportunidade
+                        );
+
+                    financeiro = `
+                        <div
+                            class="kiwify-payment-info"
+                            title="Pagamento: ${metodo}"
+                        >
+
+                            <span
+                                class="payment-status ${escapar(
+                                    pagamentoStatus
+                                )}"
+                            >
+                                ${escapar(
+                                    pagamentoLabel
+                                )}
+                            </span>
+
+                            <small>
+                                ${metodo}
+                            </small>
+
+                            ${
+                                pagamentoStatus ===
+                                "pendente"
+                                    ? `
+                                        <small>
+                                            Em aberto:
+                                            ${formatarMoeda(
+                                                saldo
+                                            )}
+                                        </small>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+                    `;
+                }
+
+                /*
+                 * =================================================
+                 * STATUS
+                 * =================================================
+                 */
+
+                let statusControle = "";
+
+                if (
+                    oportunidade.tipo ===
+                    "ebook"
+                ) {
+
+                    /*
+                     * Kiwify:
+                     * status financeiro é somente leitura.
+                     */
+
+                    statusControle = `
+                        <span
+                            class="status-badge ${escapar(
+                                oportunidade.statusPagamento ||
+                                "pendente"
+                            )}"
+                            title="Status financeiro controlado pelo webhook Kiwify"
+                        >
+                            ${escapar(
+                                nomeStatusPagamento(
+                                    oportunidade.statusPagamento ||
+                                    "pendente"
+                                )
+                            )}
+                        </span>
+                    `;
+
+                } else {
+
+                    statusControle = `
+                        <select
+                            class="status-select"
+                            data-status-id="${origemId}"
+                            data-status-tipo="${escapar(
+                                oportunidade.tipo
+                            )}"
+                        >
+
+                            <option
+                                value="novo"
+                                ${
+                                    status ===
+                                    "novo"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Novo
+                            </option>
+
+                            <option
+                                value="pendente"
+                                ${
+                                    status ===
+                                    "pendente"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Pendente
+                            </option>
+
+                            <option
+                                value="em_andamento"
+                                ${
+                                    status ===
+                                    "em_andamento"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Em andamento
+                            </option>
+
+                            <option
+                                value="fechado"
+                                ${
+                                    status ===
+                                    "fechado"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Concluído
+                            </option>
+
+                            <option
+                                value="cancelado"
+                                ${
+                                    status ===
+                                    "cancelado"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Cancelado
+                            </option>
+
+                        </select>
+                    `;
+                }
+
+                /*
+                 * =================================================
+                 * LINHA
+                 * =================================================
+                 */
 
                 tr.innerHTML = `
 
                     <td>
+
                         <div class="table-client">
 
                             <div class="table-avatar">
@@ -1758,8 +2621,8 @@
                             </div>
 
                         </div>
-                    </td>
 
+                    </td>
 
                     <td>
 
@@ -1775,18 +2638,25 @@
 
                     </td>
 
-
                     <td>
 
                         <div
                             class="table-service"
                             title="${servico}"
                         >
+
                             ${servico || "—"}
+
+                            ${
+                                oportunidade.tipo ===
+                                "ebook"
+                                    ? financeiro
+                                    : ""
+                            }
+
                         </div>
 
                     </td>
-
 
                     <td>
 
@@ -1800,80 +2670,33 @@
                                     : "—"
                             }
 
+                            ${
+                                oportunidade.tipo ===
+                                    "ebook" &&
+                                oportunidade.statusPagamento ===
+                                    "pendente"
+                                    ? `
+                                        <small
+                                            class="table-open-value"
+                                        >
+                                            Aberto:
+                                            ${formatarMoeda(
+                                                oportunidade.saldoAberto
+                                            )}
+                                        </small>
+                                    `
+                                    : ""
+                            }
+
                         </div>
 
                     </td>
 
-
                     <td>
 
-                        <select
-                            class="status-select"
-                            data-status-id="${origemId}"
-                            data-status-tipo="${escapar(
-                                oportunidade.tipo
-                            )}"
-                        >
-
-                            <option
-                                value="novo"
-                                ${
-                                    status === "novo"
-                                        ? "selected"
-                                        : ""
-                                }
-                            >
-                                Novo
-                            </option>
-
-                            <option
-                                value="pendente"
-                                ${
-                                    status === "pendente"
-                                        ? "selected"
-                                        : ""
-                                }
-                            >
-                                Pendente
-                            </option>
-
-                            <option
-                                value="em_andamento"
-                                ${
-                                    status === "em_andamento"
-                                        ? "selected"
-                                        : ""
-                                }
-                            >
-                                Em andamento
-                            </option>
-
-                            <option
-                                value="fechado"
-                                ${
-                                    status === "fechado"
-                                        ? "selected"
-                                        : ""
-                                }
-                            >
-                                Concluído
-                            </option>
-
-                            <option
-                                value="cancelado"
-                                ${
-                                    status === "cancelado"
-                                        ? "selected"
-                                        : ""
-                                }
-                            >
-                                Cancelado
-                            </option>
-
-                        </select>
+                        ${statusControle}
 
                     </td>
-
 
                     <td>
 
@@ -1882,7 +2705,6 @@
                         </span>
 
                     </td>
-
 
                     <td>
 
@@ -1901,7 +2723,6 @@
 
                     </td>
 
-
                     <td>
 
                         <div class="table-actions">
@@ -1918,12 +2739,12 @@
 
                 `;
 
-
-                tableBody.appendChild(tr);
+                tableBody.appendChild(
+                    tr
+                );
             }
         );
     }
-
 
     /* =========================================================
        WHATSAPP
@@ -1935,14 +2756,16 @@
 
         let numero =
             String(
-                oportunidade.contato || ""
-            ).replace(/\D/g, "");
-
+                oportunidade.contato ||
+                ""
+            ).replace(
+                /\D/g,
+                ""
+            );
 
         if (!numero) {
             return;
         }
-
 
         if (
             numero.length === 10 ||
@@ -1951,7 +2774,6 @@
             numero =
                 `55${numero}`;
         }
-
 
         const mensagem =
             `Olá, ${
@@ -1964,12 +2786,10 @@
                         : "seu projeto"
             }.`;
 
-
         const url =
             `https://wa.me/${numero}?text=${encodeURIComponent(
                 mensagem
             )}`;
-
 
         window.open(
             url,
@@ -1977,7 +2797,6 @@
             "noopener,noreferrer"
         );
     }
-
 
     /* =========================================================
        PAGAMENTO
@@ -1990,9 +2809,13 @@
         if (
             !oportunidade?.payment_url
         ) {
+
+            alert(
+                "Este pedido não possui link de pagamento disponível."
+            );
+
             return;
         }
-
 
         window.open(
             oportunidade.payment_url,
@@ -2000,7 +2823,6 @@
             "noopener,noreferrer"
         );
     }
-
 
     /* =========================================================
        ALTERAR STATUS
@@ -2015,52 +2837,47 @@
         const supabase =
             obterSupabase();
 
-
         if (!supabase) {
             return;
         }
 
+        /*
+         * KIWIFY
+         *
+         * NUNCA alterar status financeiro
+         * pelo CRM.
+         */
 
-        let tabela = "";
+        if (
+            tipo === "ebook"
+        ) {
 
+            console.info(
+                "[CRM] Status Kiwify é somente leitura."
+            );
 
-        if (tipo === "orcamento") {
-            tabela = "orcamentos";
-        }
+            await carregarOportunidades();
 
-
-        if (tipo === "ebook") {
-            tabela = "ebook_pedidos";
-        }
-
-
-        if (tipo === "lead") {
-            tabela = "leads";
-        }
-
-
-        if (!tabela) {
             return;
         }
-
 
         try {
 
             let resultado;
 
-
             /*
-             * ORÇAMENTO / KIWIFY
+             * ORÇAMENTO
              */
 
             if (
-                tipo === "orcamento" ||
-                tipo === "ebook"
+                tipo === "orcamento"
             ) {
 
                 resultado =
                     await supabase
-                        .from(tabela)
+                        .from(
+                            "orcamentos"
+                        )
                         .update({
                             status
                         })
@@ -2069,29 +2886,34 @@
                             id
                         );
 
-            } else {
+            }
 
-                /*
-                 * LEAD
-                 */
+            /*
+             * LEAD
+             */
+
+            else if (
+                tipo === "lead"
+            ) {
 
                 const usuario =
                     await obterUsuario();
-
 
                 let query =
                     supabase
                         .from("leads")
                         .update({
-                            status
+                            etapa:
+                                status
                         })
                         .eq(
                             "id",
                             id
                         );
 
-
-                if (usuario?.id) {
+                if (
+                    usuario?.id
+                ) {
 
                     query =
                         query.eq(
@@ -2100,50 +2922,19 @@
                         );
                 }
 
-
                 resultado =
                     await query;
-
-
-                /*
-                 * Compatibilidade com
-                 * tabela que usa etapa.
-                 */
-
-                if (resultado.error) {
-
-                    let queryEtapa =
-                        supabase
-                            .from("leads")
-                            .update({
-                                etapa: status
-                            })
-                            .eq(
-                                "id",
-                                id
-                            );
-
-
-                    if (usuario?.id) {
-
-                        queryEtapa =
-                            queryEtapa.eq(
-                                "user_id",
-                                usuario.id
-                            );
-                    }
-
-
-                    resultado =
-                        await queryEtapa;
-                }
             }
 
+            else {
+                return;
+            }
 
-            if (resultado.error) {
+            if (
+                resultado.error
+            ) {
                 throw resultado.error;
             }
-
 
             await carregarOportunidades();
 
@@ -2154,11 +2945,13 @@
                 error
             );
 
+            alert(
+                "Não foi possível alterar o status."
+            );
 
             await carregarOportunidades();
         }
     }
-
 
     /* =========================================================
        MODAL
@@ -2170,26 +2963,21 @@
             return;
         }
 
-
         modal.classList.remove(
             "hidden"
         );
 
-
         modal.classList.add(
             "show"
         );
-
 
         modal.setAttribute(
             "aria-hidden",
             "false"
         );
 
-
         document.body.style.overflow =
             "hidden";
-
 
         setTimeout(
             () =>
@@ -2198,76 +2986,62 @@
         );
     }
 
-
     function fecharModal() {
 
         if (!modal) {
             return;
         }
 
-
         modal.classList.remove(
             "show"
         );
 
-
         modal.classList.add(
             "hidden"
         );
-
 
         modal.setAttribute(
             "aria-hidden",
             "true"
         );
 
-
         document.body.style.overflow =
             "";
-
 
         oportunidadeEditandoId =
             null;
     }
 
-
     function limparFormulario() {
 
         form?.reset();
 
-
         if (leadId) {
             leadId.value = "";
         }
-
 
         if (leadEtapa) {
             leadEtapa.value =
                 "novo";
         }
 
-
         if (leadOrigem) {
             leadOrigem.value =
                 "outro";
         }
 
-
         if (leadValor) {
             leadValor.value = "";
         }
-
 
         if (leadOrigemId) {
             leadOrigemId.value = "";
         }
 
-
         if (modalTitle) {
             modalTitle.textContent =
                 "Novo lead";
         }
-
 
         if (saveBtn) {
 
@@ -2278,19 +3052,14 @@
                 false;
         }
 
-
         oportunidadeEditandoId =
             null;
     }
 
-
     function abrirNovoLead() {
-
         limparFormulario();
-
         abrirModal();
     }
-
 
     /* =========================================================
        EDITAR LEAD
@@ -2301,51 +3070,44 @@
         const lead =
             oportunidades.find(
                 item =>
-                    item.tipo === "lead" &&
+                    item.tipo ===
+                        "lead" &&
                     String(
                         item.origemId
                     ) === String(id)
             );
 
-
         if (!lead) {
             return;
         }
 
-
         oportunidadeEditandoId =
             lead.origemId;
-
 
         if (leadId) {
             leadId.value =
                 lead.origemId;
         }
 
-
         if (leadNome) {
             leadNome.value =
                 lead.nome || "";
         }
-
 
         if (leadContato) {
             leadContato.value =
                 lead.contato || "";
         }
 
-
         if (leadEmail) {
             leadEmail.value =
                 lead.email || "";
         }
 
-
         if (leadServico) {
             leadServico.value =
                 lead.servico || "";
         }
-
 
         if (leadValor) {
             leadValor.value =
@@ -2354,63 +3116,58 @@
                 );
         }
 
-
         if (leadOrigem) {
             leadOrigem.value =
-                lead.origem || "outro";
+                lead.origem ||
+                "outro";
         }
-
 
         if (leadEtapa) {
             leadEtapa.value =
-                lead.status || "novo";
+                lead.status ||
+                "novo";
         }
-
 
         if (leadOrigemId) {
             leadOrigemId.value =
-                lead.origemId || "";
+                lead.origemId ||
+                "";
         }
-
 
         if (leadObs) {
             leadObs.value =
-                lead.observacoes || "";
+                lead.observacoes ||
+                "";
         }
-
 
         if (modalTitle) {
             modalTitle.textContent =
                 "Editar lead";
         }
 
-
         if (saveBtn) {
             saveBtn.textContent =
                 "Salvar alterações";
         }
 
-
         abrirModal();
     }
-
 
     /* =========================================================
        SALVAR LEAD
     ========================================================= */
 
-    async function salvarLead(event) {
+    async function salvarLead(
+        event
+    ) {
 
         event.preventDefault();
-
 
         const supabase =
             obterSupabase();
 
-
         const usuario =
             await obterUsuario();
-
 
         if (
             !supabase ||
@@ -2424,10 +3181,8 @@
             return;
         }
 
-
         const nome =
             leadNome?.value.trim();
-
 
         if (!nome) {
 
@@ -2435,7 +3190,6 @@
 
             return;
         }
-
 
         const payload = {
 
@@ -2474,10 +3228,10 @@
                 null
         };
 
-
         if (saveBtn) {
 
-            saveBtn.disabled = true;
+            saveBtn.disabled =
+                true;
 
             saveBtn.textContent =
                 oportunidadeEditandoId
@@ -2485,11 +3239,9 @@
                     : "Cadastrando...";
         }
 
-
         try {
 
             let resultado;
-
 
             if (
                 oportunidadeEditandoId
@@ -2498,7 +3250,9 @@
                 resultado =
                     await supabase
                         .from("leads")
-                        .update(payload)
+                        .update(
+                            payload
+                        )
                         .eq(
                             "id",
                             oportunidadeEditandoId
@@ -2518,11 +3272,11 @@
                         );
             }
 
-
-            if (resultado.error) {
+            if (
+                resultado.error
+            ) {
                 throw resultado.error;
             }
-
 
             fecharModal();
 
@@ -2536,7 +3290,6 @@
                 "[CRM] Erro ao salvar lead:",
                 error
             );
-
 
             alert(
                 "Não foi possível salvar o lead.\n\n" +
@@ -2559,46 +3312,42 @@
         }
     }
 
-
     /* =========================================================
        EXCLUIR LEAD
     ========================================================= */
 
-    async function excluirLead(id) {
+    async function excluirLead(
+        id
+    ) {
 
         const lead =
             oportunidades.find(
                 item =>
-                    item.tipo === "lead" &&
+                    item.tipo ===
+                        "lead" &&
                     String(
                         item.origemId
                     ) === String(id)
             );
 
-
         if (!lead) {
             return;
         }
-
 
         const confirmar =
             window.confirm(
                 `Excluir o lead "${lead.nome}"?`
             );
 
-
         if (!confirmar) {
             return;
         }
 
-
         const supabase =
             obterSupabase();
 
-
         const usuario =
             await obterUsuario();
-
 
         if (
             !supabase ||
@@ -2607,10 +3356,11 @@
             return;
         }
 
-
         try {
 
-            const { error } =
+            const {
+                error
+            } =
                 await supabase
                     .from("leads")
                     .delete()
@@ -2623,11 +3373,9 @@
                         usuario.id
                     );
 
-
             if (error) {
                 throw error;
             }
-
 
             await carregarOportunidades();
 
@@ -2638,19 +3386,19 @@
                 error
             );
 
-
             alert(
                 "Não foi possível excluir o lead."
             );
         }
     }
 
-
     /* =========================================================
        DETALHES
     ========================================================= */
 
-    function visualizarOportunidade(id) {
+    function visualizarOportunidade(
+        id
+    ) {
 
         const oportunidade =
             oportunidades.find(
@@ -2659,11 +3407,9 @@
                     String(id)
             );
 
-
         if (!oportunidade) {
             return;
         }
-
 
         const detalhes = [
 
@@ -2685,6 +3431,14 @@
                 ? `Produto: ${oportunidade.produtoNome}`
                 : "",
 
+            oportunidade.produtoId
+                ? `Produto ID: ${oportunidade.produtoId}`
+                : "",
+
+            oportunidade.produtoCodigo
+                ? `Código: ${oportunidade.produtoCodigo}`
+                : "",
+
             `Projeto: ${oportunidade.servico}`,
 
             oportunidade.valor > 0
@@ -2693,22 +3447,55 @@
                 )}`
                 : "Valor: Não informado",
 
-            `Status: ${nomeStatus(
+            `Status CRM: ${nomeStatus(
                 oportunidade.status
             )}`,
 
-            `Origem: ${oportunidade.origemLabel}`,
+            oportunidade.statusPagamento
+                ? `Status pagamento: ${nomeStatusPagamento(
+                    oportunidade.statusPagamento
+                )}`
+                : "",
 
-            oportunidade.produtoId
-                ? `Produto ID: ${oportunidade.produtoId}`
+            oportunidade.metodoPagamento
+                ? `Forma de pagamento: ${oportunidade.metodoPagamento}`
+                : "",
+
+            oportunidade.valorTotal > 0
+                ? `Valor total: ${formatarMoeda(
+                    oportunidade.valorTotal
+                )}`
+                : "",
+
+            oportunidade.valorPago > 0
+                ? `Valor pago: ${formatarMoeda(
+                    oportunidade.valorPago
+                )}`
+                : "",
+
+            oportunidade.statusPagamento ===
+                "pendente"
+                ? `Valor em aberto: ${formatarMoeda(
+                    oportunidade.saldoAberto
+                )}`
+                : "",
+
+            oportunidade.origemLabel
+                ? `Origem: ${oportunidade.origemLabel}`
                 : "",
 
             oportunidade.plano
                 ? `Plano: ${oportunidade.plano}`
                 : "",
 
-            oportunidade.prazo
-                ? `Prazo: ${oportunidade.prazo}`
+            oportunidade.parcelas
+                ? `Parcelas: ${oportunidade.parcelas}`
+                : "",
+
+            oportunidade.data_compra
+                ? `Compra: ${formatarDataHora(
+                    oportunidade.data_compra
+                )}`
                 : "",
 
             oportunidade.paid_at
@@ -2717,8 +3504,12 @@
                 )}`
                 : "",
 
-            oportunidade.kiwify_order_id
-                ? `Pedido Kiwify: ${oportunidade.kiwify_order_id}`
+            oportunidade.order_id
+                ? `Order ID: ${oportunidade.order_id}`
+                : "",
+
+            oportunidade.transaction_id
+                ? `Transaction ID: ${oportunidade.transaction_id}`
                 : "",
 
             oportunidade.observacoes
@@ -2729,15 +3520,13 @@
             .filter(Boolean)
             .join("\n");
 
-
         window.alert(
             detalhes
         );
     }
 
-
     /* =========================================================
-       EVENTOS DA TABELA
+       EVENTOS TABELA
     ========================================================= */
 
     tableBody?.addEventListener(
@@ -2749,30 +3538,27 @@
                     "[data-action]"
                 );
 
-
             if (!button) {
                 return;
             }
 
-
             const action =
                 button.dataset.action;
-
 
             const id =
                 button.dataset.id;
 
-
             const oportunidade =
                 oportunidades.find(
                     item =>
-                        String(item.id) ===
-                        String(id)
+                        String(
+                            item.id
+                        ) === String(id)
                 );
 
-
             if (
-                action === "whatsapp" &&
+                action ===
+                    "whatsapp" &&
                 oportunidade
             ) {
 
@@ -2781,9 +3567,9 @@
                 );
             }
 
-
             if (
-                action === "payment" &&
+                action ===
+                    "payment" &&
                 oportunidade
             ) {
 
@@ -2792,23 +3578,34 @@
                 );
             }
 
+            if (
+                action === "edit"
+            ) {
 
-            if (action === "edit") {
                 editarLead(id);
             }
 
+            if (
+                action === "delete"
+            ) {
 
-            if (action === "delete") {
                 excluirLead(id);
             }
 
+            if (
+                action === "view"
+            ) {
 
-            if (action === "view") {
-                visualizarOportunidade(id);
+                visualizarOportunidade(
+                    id
+                );
             }
         }
     );
 
+    /* =========================================================
+       STATUS
+    ========================================================= */
 
     tableBody?.addEventListener(
         "change",
@@ -2819,23 +3616,17 @@
                     "[data-status-id]"
                 );
 
-
             if (!select) {
                 return;
             }
 
-
             alterarStatus(
-
                 select.dataset.statusId,
-
                 select.dataset.statusTipo,
-
                 select.value
             );
         }
     );
-
 
     /* =========================================================
        PIPELINE
@@ -2856,7 +3647,6 @@
                             elemento.dataset
                                 .filterStatus;
 
-
                         const dados =
                             oportunidades.filter(
                                 item =>
@@ -2864,11 +3654,9 @@
                                     status
                             );
 
-
                         renderizarTabela(
                             dados
                         );
-
 
                         document
                             .querySelector(
@@ -2885,9 +3673,8 @@
             }
         );
 
-
     /* =========================================================
-       MODAL - EVENTOS
+       MODAL EVENTOS
     ========================================================= */
 
     $("novoLeadBtn")
@@ -2896,13 +3683,11 @@
             abrirNovoLead
         );
 
-
     $("emptyNewLeadBtn")
         ?.addEventListener(
             "click",
             abrirNovoLead
         );
-
 
     $("fecharLeadModal")
         ?.addEventListener(
@@ -2910,45 +3695,42 @@
             fecharModal
         );
 
-
     $("cancelarLeadBtn")
         ?.addEventListener(
             "click",
             fecharModal
         );
 
-
     modalOverlay?.addEventListener(
         "click",
         fecharModal
     );
-
 
     document.addEventListener(
         "keydown",
         event => {
 
             if (
-                event.key === "Escape" &&
+                event.key ===
+                    "Escape" &&
                 modal &&
                 !modal.classList.contains(
                     "hidden"
                 )
             ) {
+
                 fecharModal();
             }
         }
     );
-
 
     form?.addEventListener(
         "submit",
         salvarLead
     );
 
-
     /* =========================================================
-       VALOR
+       VALOR INPUT
     ========================================================= */
 
     leadValor?.addEventListener(
@@ -2963,7 +3745,6 @@
         }
     );
 
-
     leadValor?.addEventListener(
         "blur",
         () => {
@@ -2972,7 +3753,6 @@
                 valorNumero(
                     leadValor.value
                 );
-
 
             leadValor.value =
                 valor
@@ -2983,7 +3763,6 @@
         }
     );
 
-
     /* =========================================================
        REFRESH
     ========================================================= */
@@ -2992,7 +3771,6 @@
         "click",
         carregarOportunidades
     );
-
 
     /* =========================================================
        DATA
@@ -3003,23 +3781,25 @@
         const elemento =
             $("todayText");
 
-
         if (!elemento) {
             return;
         }
-
 
         elemento.textContent =
             new Date().toLocaleDateString(
                 "pt-BR",
                 {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "long"
+                    weekday:
+                        "long",
+
+                    day:
+                        "2-digit",
+
+                    month:
+                        "long"
                 }
             );
     }
-
 
     /* =========================================================
        ATUALIZAÇÃO
@@ -3031,7 +3811,6 @@
 
         renderizarTabela();
     }
-
 
     /* =========================================================
        API GLOBAL
@@ -3055,9 +3834,128 @@
             atualizarTudo,
 
         listar:
-            () => [...oportunidades]
-    };
+            () => [
+                ...oportunidades
+            ],
 
+        listarKiwify:
+            () =>
+                oportunidades.filter(
+                    item =>
+                        item.tipo ===
+                        "ebook"
+                ),
+
+        listarKiwifyAbertos:
+            () =>
+                oportunidades.filter(
+                    item =>
+                        item.tipo ===
+                            "ebook" &&
+                        item.statusPagamento ===
+                            "pendente"
+                ),
+
+        valorKiwifyAberto:
+            () =>
+                oportunidades
+                    .filter(
+                        item =>
+                            item.tipo ===
+                                "ebook" &&
+                            item.statusPagamento ===
+                                "pendente"
+                    )
+                    .reduce(
+                        (
+                            total,
+                            item
+                        ) =>
+                            total +
+                            valorNumero(
+                                item.saldoAberto ??
+                                item.valor
+                            ),
+                        0
+                    ),
+
+        valorKiwifyPago:
+            () =>
+                oportunidades
+                    .filter(
+                        item =>
+                            item.tipo ===
+                                "ebook" &&
+                            item.statusPagamento ===
+                                "pago"
+                    )
+                    .reduce(
+                        (
+                            total,
+                            item
+                        ) =>
+                            total +
+                            valorNumero(
+                                item.valorPago ||
+                                item.valor
+                            ),
+                        0
+                    ),
+
+        valorPixAberto:
+            () =>
+                oportunidades
+                    .filter(
+                        item =>
+                            item.tipo ===
+                                "ebook" &&
+                            item.statusPagamento ===
+                                "pendente" &&
+                            normalizar(
+                                item.metodoPagamento
+                            ) ===
+                                "pix"
+                    )
+                    .reduce(
+                        (
+                            total,
+                            item
+                        ) =>
+                            total +
+                            valorNumero(
+                                item.saldoAberto ??
+                                item.valor
+                            ),
+                        0
+                    ),
+
+        valorBoletoAberto:
+            () =>
+                oportunidades
+                    .filter(
+                        item =>
+                            item.tipo ===
+                                "ebook" &&
+                            item.statusPagamento ===
+                                "pendente" &&
+                            normalizar(
+                                item.metodoPagamento
+                            ) ===
+                                "boleto"
+                    )
+                    .reduce(
+                        (
+                            total,
+                            item
+                        ) =>
+                            total +
+                            valorNumero(
+                                item.saldoAberto ??
+                                item.valor
+                            ),
+                        0
+                    )
+    };
 
     /* =========================================================
        INIT
@@ -3065,11 +3963,14 @@
 
     function iniciar() {
 
+        console.log(
+            "[CRM] Leads & Oportunidades iniciando..."
+        );
+
         atualizarDataHoje();
 
         carregarOportunidades();
     }
-
 
     if (
         document.readyState ===
@@ -3087,3 +3988,4 @@
     }
 
 })();
+

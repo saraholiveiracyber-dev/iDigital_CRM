@@ -2,6 +2,7 @@
    iDigital CRM Premium 2.0
    DASHBOARD.JS
    DASHBOARD EXECUTIVO
+   INTEGRAÇÃO KIWIFY + SUPABASE
    ========================================================= */
 
 "use strict";
@@ -58,7 +59,6 @@
             .replace(/^R\$/i, "");
 
         /*
-         * Exemplo:
          * 1.500,50
          */
         if (
@@ -71,7 +71,6 @@
         }
 
         /*
-         * Exemplo:
          * 1500,50
          */
         else if (texto.includes(",")) {
@@ -101,7 +100,8 @@
 
     function moneyCompact(valor) {
 
-        const numero = converterNumero(valor);
+        const numero =
+            converterNumero(valor);
 
         if (numero >= 1000000) {
 
@@ -133,6 +133,10 @@
     }
 
 
+    /* =====================================================
+       VALOR GENÉRICO
+    ====================================================== */
+
     function getValor(item) {
 
         if (!item) {
@@ -153,8 +157,10 @@
 
             if (
                 item[campo] !== undefined &&
-                item[campo] !== null
+                item[campo] !== null &&
+                item[campo] !== ""
             ) {
+
                 return converterNumero(
                     item[campo]
                 );
@@ -162,6 +168,59 @@
         }
 
         return 0;
+    }
+
+
+    /* =====================================================
+       VALOR KIWIFY
+    ====================================================== */
+
+    function getValorKiwify(pedido) {
+
+        if (!pedido) {
+            return 0;
+        }
+
+        /*
+         * Pedido pago:
+         * usa primeiro valor_pago.
+         */
+
+        if (
+            statusPago(pedido.status)
+        ) {
+
+            const valorPago =
+                converterNumero(
+                    pedido.valor_pago
+                );
+
+            if (valorPago > 0) {
+                return valorPago;
+            }
+        }
+
+        /*
+         * Pedido pendente:
+         * usa valor_total.
+         */
+
+        const valorTotal =
+            converterNumero(
+                pedido.valor_total
+            );
+
+        if (valorTotal > 0) {
+            return valorTotal;
+        }
+
+        /*
+         * Fallback
+         */
+
+        return converterNumero(
+            pedido.valor
+        );
     }
 
 
@@ -272,9 +331,6 @@
             return null;
         }
 
-        /*
-         * Evita problemas de timezone em YYYY-MM-DD
-         */
         if (
             typeof valor === "string" &&
             /^\d{4}-\d{2}-\d{2}$/.test(valor)
@@ -315,6 +371,7 @@
             "data_pagamento",
             "data_recebimento",
             "paid_at",
+            "data_compra",
             "vencimento",
             "data",
             "created_at"
@@ -386,21 +443,12 @@
             "Olá";
 
         if (hora < 12) {
-
-            saudacao =
-                "Bom dia";
-
+            saudacao = "Bom dia";
         } else if (hora < 18) {
-
-            saudacao =
-                "Boa tarde";
-
+            saudacao = "Boa tarde";
         } else {
-
-            saudacao =
-                "Boa noite";
+            saudacao = "Boa noite";
         }
-
 
         const greeting =
             $("#dashboardGreetingText");
@@ -410,7 +458,6 @@
             greeting.textContent =
                 `${saudacao}! Aqui está o resumo da sua operação.`;
         }
-
 
         const today =
             $("#todayText");
@@ -433,10 +480,6 @@
 
     /* =====================================================
        USUÁRIO
-       
-       IMPORTANTE:
-       NÃO usamos window.crm.uid().
-       O ID oficial vem do Supabase Auth.
     ====================================================== */
 
     async function carregarUsuario(supabase) {
@@ -472,17 +515,9 @@
                 return null;
             }
 
-
-            /*
-             * ID REAL DO SUPABASE AUTH
-             */
             estado.userId =
                 usuario.id || null;
 
-
-            /*
-             * Validação extra
-             */
             if (!uuidValido(estado.userId)) {
 
                 console.error(
@@ -495,58 +530,35 @@
                 return null;
             }
 
-
-            console.log(
-                "Usuário autenticado:",
-                {
-                    id: estado.userId,
-                    email: usuario.email
-                }
-            );
-
-
-            /*
-             * NOME
-             */
             const nome =
-    usuario.user_metadata?.nome ||
-    usuario.user_metadata?.name ||
-    "Sarah Oliveira";
-
+                usuario.user_metadata?.nome ||
+                usuario.user_metadata?.name ||
+                "Sarah Oliveira";
 
             const dashboardNome =
                 $("#dashboardUserName");
 
             if (dashboardNome) {
-
                 dashboardNome.textContent =
                     nome;
             }
-
 
             const userName =
                 $("#userName");
 
             if (userName) {
-
                 userName.textContent =
                     nome;
             }
-
 
             const userEmail =
                 $("#userEmail");
 
             if (userEmail) {
-
                 userEmail.textContent =
                     usuario.email || "";
             }
 
-
-            /*
-             * AVATAR
-             */
             const avatar =
                 $("#userAvatar");
 
@@ -572,7 +584,6 @@
                 avatar.textContent =
                     "";
             }
-
 
             return usuario;
 
@@ -603,7 +614,6 @@
         estado.orcamentos = [];
         estado.ebookPedidos = [];
 
-
         const consultas = [];
 
 
@@ -614,9 +624,7 @@
         if (uuidValido(estado.userId)) {
 
             consultas.push({
-
                 nome: "clientes",
-
                 promise:
                     supabase
                         .from("clientes")
@@ -637,14 +645,10 @@
 
             /* =============================================
                LEADS
-               
-               NÃO usa user_id.
             ============================================== */
 
             consultas.push({
-
                 nome: "leads",
-
                 promise:
                     supabase
                         .from("leads")
@@ -664,9 +668,7 @@
             ============================================== */
 
             consultas.push({
-
                 nome: "financeiro",
-
                 promise:
                     supabase
                         .from("financeiro")
@@ -690,9 +692,7 @@
             ============================================== */
 
             consultas.push({
-
                 nome: "cobrancas",
-
                 promise:
                     supabase
                         .from("cobrancas")
@@ -717,9 +717,7 @@
         ================================================== */
 
         consultas.push({
-
             nome: "orcamentos",
-
             promise:
                 supabase
                     .from("orcamentos")
@@ -739,9 +737,7 @@
         ================================================== */
 
         consultas.push({
-
             nome: "ebookPedidos",
-
             promise:
                 supabase
                     .from("ebook_pedidos")
@@ -770,7 +766,6 @@
                 const nome =
                     consultas[index].nome;
 
-
                 if (
                     resultado.status !==
                     "fulfilled"
@@ -784,10 +779,8 @@
                     return;
                 }
 
-
                 const resposta =
                     resultado.value;
-
 
                 if (resposta.error) {
 
@@ -799,7 +792,6 @@
                     return;
                 }
 
-
                 switch (nome) {
 
                     case "clientes":
@@ -809,14 +801,12 @@
 
                         break;
 
-
                     case "leads":
 
                         estado.leads =
                             resposta.data || [];
 
                         break;
-
 
                     case "financeiro":
 
@@ -825,14 +815,12 @@
 
                         break;
 
-
                     case "cobrancas":
 
                         estado.cobrancas =
                             resposta.data || [];
 
                         break;
-
 
                     case "orcamentos":
 
@@ -841,11 +829,16 @@
 
                         break;
 
-
                     case "ebookPedidos":
 
                         estado.ebookPedidos =
                             resposta.data || [];
+
+                        console.log(
+                            "Kiwify carregada:",
+                            estado.ebookPedidos.length,
+                            "pedidos"
+                        );
 
                         break;
                 }
@@ -864,7 +857,6 @@
         let analise = 0;
         let aprovados = 0;
 
-
         orcamentos.forEach(
             (orcamento) => {
 
@@ -872,7 +864,6 @@
                     normalizarStatus(
                         orcamento.status
                     );
-
 
                 if (
                     [
@@ -890,7 +881,6 @@
                     return;
                 }
 
-
                 if (
                     [
                         "em_analise",
@@ -904,39 +894,29 @@
                     return;
                 }
 
-
                 novos++;
             }
         );
 
-
         const total =
             orcamentos.length;
 
-
         if ($("#mOrcamentos")) {
-
             $("#mOrcamentos").textContent =
                 total;
         }
 
-
         if ($("#dashOrcamentosNovos")) {
-
             $("#dashOrcamentosNovos").textContent =
                 novos;
         }
 
-
         if ($("#dashOrcamentosAnalise")) {
-
             $("#dashOrcamentosAnalise").textContent =
                 analise;
         }
 
-
         if ($("#dashOrcamentosAprovados")) {
-
             $("#dashOrcamentosAprovados").textContent =
                 aprovados;
         }
@@ -944,19 +924,17 @@
 
 
     /* =====================================================
-       CÁLCULOS FINANCEIROS
+       FINANCEIRO MANUAL
     ====================================================== */
 
     function calcularEntradasPagas() {
 
         return estado.financeiro
-
             .filter(
                 item =>
                     ehEntrada(item) &&
                     statusPago(item.status)
             )
-
             .reduce(
                 (
                     total,
@@ -972,13 +950,11 @@
     function calcularSaidasPagas() {
 
         return estado.financeiro
-
             .filter(
                 item =>
                     ehSaida(item) &&
                     statusPago(item.status)
             )
-
             .reduce(
                 (
                     total,
@@ -994,13 +970,11 @@
     function calcularEntradasPendentes() {
 
         return estado.financeiro
-
             .filter(
                 item =>
                     ehEntrada(item) &&
                     !statusPago(item.status)
             )
-
             .reduce(
                 (
                     total,
@@ -1014,14 +988,79 @@
 
 
     /* =====================================================
+       KIWIFY
+    ====================================================== */
+
+    function calcularKiwify() {
+
+        const pagos =
+            estado.ebookPedidos.filter(
+                pedido =>
+                    statusPago(
+                        pedido.status
+                    )
+            );
+
+        const pendentes =
+            estado.ebookPedidos.filter(
+                pedido =>
+                    !statusPago(
+                        pedido.status
+                    )
+            );
+
+        const receitaPaga =
+            pagos.reduce(
+                (
+                    total,
+                    pedido
+                ) =>
+                    total +
+                    getValorKiwify(pedido),
+                0
+            );
+
+        const valorPendente =
+            pendentes.reduce(
+                (
+                    total,
+                    pedido
+                ) =>
+                    total +
+                    getValorKiwify(pedido),
+                0
+            );
+
+        return {
+            total:
+                estado.ebookPedidos.length,
+
+            pagos,
+
+            pendentes,
+
+            quantidadePagos:
+                pagos.length,
+
+            quantidadePendentes:
+                pendentes.length,
+
+            receitaPaga,
+
+            valorPendente
+        };
+    }
+
+
+    /* =====================================================
        INDICADORES
     ====================================================== */
 
     function atualizarIndicadores() {
 
-        /*
-         * CLIENTES
-         */
+        /* =================================================
+           CLIENTES
+        ================================================== */
 
         const clientesAtivos =
             estado.clientes.filter(
@@ -1041,7 +1080,6 @@
                 }
             );
 
-
         if ($("#mClientes")) {
 
             $("#mClientes").textContent =
@@ -1049,9 +1087,9 @@
         }
 
 
-        /*
-         * LEADS
-         */
+        /* =================================================
+           LEADS
+        ================================================== */
 
         if ($("#mLeads")) {
 
@@ -1060,66 +1098,41 @@
         }
 
 
-        /*
-         * ENTRADAS MANUAIS PAGAS
-         */
+        /* =================================================
+           FINANCEIRO MANUAL
+        ================================================== */
 
         const entradasManuais =
             calcularEntradasPagas();
 
-
-        /*
-         * DESPESAS PAGAS
-         */
-
         const despesas =
             calcularSaidasPagas();
-
-
-        /*
-         * ENTRADAS PENDENTES
-         */
 
         const entradasPendentes =
             calcularEntradasPendentes();
 
 
-        /*
-         * KIWIFY
-         */
+        /* =================================================
+           KIWIFY
+        ================================================== */
 
-        const pedidosPagos =
-            estado.ebookPedidos.filter(
-                pedido =>
-                    statusPago(
-                        pedido.status
-                    )
-            );
+        const kiwify =
+            calcularKiwify();
 
 
-        const receitaKiwify =
-            pedidosPagos.reduce(
-                (
-                    total,
-                    pedido
-                ) =>
-                    total +
-                    getValor(pedido),
-                0
-            );
+        console.log(
+            "Resumo Kiwify:",
+            kiwify
+        );
 
 
-        /*
-         * RECEITA RECEBIDA
-         *
-         * Manual paga
-         * +
-         * Kiwify paga
-         */
+        /* =================================================
+           RECEITA TOTAL
+        ================================================== */
 
         const receitaTotal =
             entradasManuais +
-            receitaKiwify;
+            kiwify.receitaPaga;
 
 
         if ($("#mReceita")) {
@@ -1129,9 +1142,9 @@
         }
 
 
-        /*
-         * COBRANÇAS A RECEBER
-         */
+        /* =================================================
+           COBRANÇAS A RECEBER
+        ================================================== */
 
         const cobrancasAReceber =
             estado.cobrancas.reduce(
@@ -1157,9 +1170,14 @@
             );
 
 
+        /* =================================================
+           TOTAL A RECEBER
+        ================================================== */
+
         const aReceber =
             cobrancasAReceber +
-            entradasPendentes;
+            entradasPendentes +
+            kiwify.valorPendente;
 
 
         if ($("#mReceber")) {
@@ -1169,40 +1187,40 @@
         }
 
 
-        /*
-         * KIWIFY
-         */
+        /* =================================================
+           VENDAS KIWIFY
+        ================================================== */
 
         if ($("#mKiwify")) {
 
             $("#mKiwify").textContent =
-                pedidosPagos.length;
+                kiwify.total;
         }
 
 
-        /*
-         * PEDIDOS
-         */
+        /* =================================================
+           TOTAL DE PEDIDOS
+        ================================================== */
 
         if ($("#mPedidos")) {
 
             $("#mPedidos").textContent =
-                estado.ebookPedidos.length;
+                kiwify.total;
         }
 
 
-        /*
-         * ORÇAMENTOS
-         */
+        /* =================================================
+           ORÇAMENTOS
+        ================================================== */
 
         renderOrcamentos(
             estado.orcamentos
         );
 
 
-        /*
-         * SALDO
-         */
+        /* =================================================
+           SALDO
+        ================================================== */
 
         const saldo =
             receitaTotal -
@@ -1216,9 +1234,9 @@
         );
 
 
-        /*
-         * PERFORMANCE
-         */
+        /* =================================================
+           PERFORMANCE
+        ================================================== */
 
         if ($("#performanceReceita")) {
 
@@ -1230,7 +1248,7 @@
         if ($("#performanceVendas")) {
 
             $("#performanceVendas").textContent =
-                pedidosPagos.length;
+                kiwify.quantidadePagos;
         }
 
 
@@ -1248,9 +1266,9 @@
         }
 
 
-        /*
-         * HISTÓRICO
-         */
+        /* =================================================
+           HISTÓRICO
+        ================================================== */
 
         renderHistoricoFinanceiro();
     }
@@ -1321,14 +1339,14 @@
         const container =
             $("#dashboardFinanceList");
 
-
         if (!container) {
             return;
         }
 
-
         const dados =
-            [...estado.financeiro]
+            [
+                ...estado.financeiro
+            ]
                 .sort(
                     (a, b) => {
 
@@ -1363,18 +1381,15 @@
                     const entrada =
                         ehEntrada(item);
 
-
                     const tipoTexto =
                         entrada
                             ? "Entrada"
                             : "Despesa";
 
-
                     const classeTipo =
                         entrada
                             ? "entrada"
                             : "saida";
-
 
                     const status =
                         statusPago(
@@ -1447,7 +1462,6 @@
         const campo =
             $("#financeData");
 
-
         if (
             !campo ||
             campo.value
@@ -1455,57 +1469,37 @@
             return;
         }
 
-
         const hoje =
             new Date();
 
-
         const ano =
             hoje.getFullYear();
-
 
         const mes =
             String(
                 hoje.getMonth() + 1
             ).padStart(2, "0");
 
-
         const dia =
             String(
                 hoje.getDate()
             ).padStart(2, "0");
-
 
         campo.value =
             `${ano}-${mes}-${dia}`;
     }
 
 
-    /* =====================================================
-       SALVAR LANÇAMENTO
-       
-       CORREÇÃO PRINCIPAL:
-       Busca SEMPRE o UUID diretamente do Supabase Auth.
-       
-       Não utiliza:
-       window.crm.uid()
-       
-       Isso evita enviar "{}" para user_id.
-    ====================================================== */
-
     async function salvarLancamento(evento) {
 
         evento.preventDefault();
-
 
         console.log(
             "iDigital CRM | Salvando lançamento..."
         );
 
-
         const supabase =
             window.supabaseClient;
-
 
         if (!supabase) {
 
@@ -1521,18 +1515,12 @@
         }
 
 
-        /* =================================================
-           USUÁRIO AUTENTICADO
-        ================================================== */
-
         let userId = null;
-
 
         try {
 
             const resultado =
                 await supabase.auth.getUser();
-
 
             if (resultado.error) {
 
@@ -1548,11 +1536,9 @@
                 return;
             }
 
-
             userId =
                 resultado?.data?.user?.id ||
                 null;
-
 
         } catch (erro) {
 
@@ -1569,16 +1555,11 @@
         }
 
 
-        /*
-         * VALIDAÇÃO ABSOLUTA DO UUID
-         */
-
         if (!uuidValido(userId)) {
 
             console.error(
                 "UUID inválido recebido do Supabase:",
-                userId,
-                typeof userId
+                userId
             );
 
             alert(
@@ -1589,74 +1570,36 @@
         }
 
 
-        /*
-         * Atualiza estado com UUID real
-         */
-
         estado.userId =
             userId;
 
 
-        console.log(
-            "UUID REAL DO USUÁRIO:",
-            userId
-        );
-
-
-        /* =================================================
-           CAMPOS
-        ================================================== */
-
         const tipo =
             $("#financeTipo")?.value;
-
 
         const descricao =
             $("#financeDescricao")?.value
                 ?.trim();
 
-
         const valorTexto =
             $("#financeValor")?.value;
-
 
         const valor =
             converterNumero(
                 valorTexto
             );
 
-
         const data =
             $("#financeData")?.value;
-
 
         const categoria =
             $("#financeCategoria")?.value ||
             "outros";
 
-
         const status =
             $("#financeStatus")?.value ||
             "pago";
 
-
-        console.log(
-            "Dados do lançamento:",
-            {
-                userId,
-                tipo,
-                descricao,
-                valor,
-                data,
-                categoria,
-                status
-            }
-        );
-
-
-        /* =================================================
-           VALIDAÇÃO
-        ================================================== */
 
         if (
             tipo !== "entrada" &&
@@ -1711,10 +1654,6 @@
         }
 
 
-        /* =================================================
-           PAYLOAD
-        ================================================== */
-
         const payload = {
 
             user_id: userId,
@@ -1733,26 +1672,6 @@
             status: status
         };
 
-
-        /*
-         * IMPORTANTE:
-         * user_id precisa aparecer como STRING UUID.
-         */
-
-        console.log(
-            "Payload enviado ao Supabase:",
-            payload
-        );
-
-        console.log(
-            "Tipo do user_id:",
-            typeof payload.user_id
-        );
-
-
-        /* =================================================
-           SALVAR
-        ================================================== */
 
         const botao =
             $("#dashboardFinanceSubmit");
@@ -1781,10 +1700,6 @@
                     ]);
 
 
-            /* =============================================
-               ERRO SUPABASE
-            ============================================== */
-
             if (resultado.error) {
 
                 console.error(
@@ -1792,42 +1707,13 @@
                     resultado.error
                 );
 
-
-                console.error(
-                    "Código:",
-                    resultado.error.code
-                );
-
-
-                console.error(
-                    "Detalhes:",
-                    resultado.error.details
-                );
-
-
-                console.error(
-                    "Hint:",
-                    resultado.error.hint
-                );
-
-
                 alert(
                     "Erro ao salvar lançamento:\n\n" +
                     resultado.error.message
                 );
 
-
                 return;
             }
-
-
-            /* =============================================
-               SUCESSO
-            ============================================== */
-
-            console.log(
-                "Lançamento salvo com sucesso."
-            );
 
 
             alert(
@@ -1835,30 +1721,16 @@
             );
 
 
-            /* =============================================
-               LIMPAR FORMULÁRIO
-            ============================================== */
-
             const form =
                 $("#dashboardFinanceForm");
 
-
             if (form) {
-
                 form.reset();
             }
 
 
-            /*
-             * DATA VOLTA PARA HOJE
-             */
-
             definirDataAtual();
 
-
-            /*
-             * RECARREGAR DASHBOARD
-             */
 
             await iniciarDashboard(true);
 
@@ -1870,11 +1742,9 @@
                 erro
             );
 
-
             alert(
                 "Não foi possível salvar o lançamento."
             );
-
 
         } finally {
 
@@ -1900,20 +1770,9 @@
         const form =
             $("#dashboardFinanceForm");
 
-
         if (!form) {
-
-            console.warn(
-                "Formulário #dashboardFinanceForm não encontrado."
-            );
-
             return;
         }
-
-
-        /*
-         * Evita evento duplicado
-         */
 
         if (
             form.dataset.eventoFinanceiro ===
@@ -1937,11 +1796,6 @@
 
 
         definirDataAtual();
-
-
-        console.log(
-            "Formulário financeiro conectado."
-        );
     }
 
 
@@ -1953,7 +1807,6 @@
 
         const agora =
             new Date();
-
 
         const meses = [];
 
@@ -1987,29 +1840,25 @@
                     0;
 
 
-                /*
-                 * ENTRADAS MANUAIS PAGAS
-                 */
+                /* =========================================
+                   ENTRADAS MANUAIS PAGAS
+                ========================================== */
 
                 estado.financeiro
-
                     .filter(
                         item =>
                             ehEntrada(item) &&
                             statusPago(item.status)
                     )
-
                     .forEach(
                         item => {
 
                             const data =
                                 dataItem(item);
 
-
                             if (!data) {
                                 return;
                             }
-
 
                             if (
                                 data.getMonth() === mes &&
@@ -2023,30 +1872,26 @@
                     );
 
 
-                /*
-                 * KIWIFY
-                 */
+                /* =========================================
+                   KIWIFY PAGAS
+                ========================================== */
 
                 estado.ebookPedidos
-
                     .filter(
                         pedido =>
                             statusPago(
                                 pedido.status
                             )
                     )
-
                     .forEach(
                         pedido => {
 
                             const data =
                                 dataItem(pedido);
 
-
                             if (!data) {
                                 return;
                             }
-
 
                             if (
                                 data.getMonth() === mes &&
@@ -2054,7 +1899,9 @@
                             ) {
 
                                 total +=
-                                    getValor(pedido);
+                                    getValorKiwify(
+                                        pedido
+                                    );
                             }
                         }
                     );
@@ -2071,11 +1918,9 @@
         const canvas =
             $("#revenueChart");
 
-
         if (!canvas) {
             return;
         }
-
 
         if (
             typeof Chart !== "function"
@@ -2088,10 +1933,8 @@
             return;
         }
 
-
         const contexto =
             canvas.getContext("2d");
-
 
         if (!contexto) {
             return;
@@ -2100,7 +1943,6 @@
 
         const agora =
             new Date();
-
 
         const meses = [];
 
@@ -2317,13 +2159,11 @@
                             x: {
 
                                 border: {
-
                                     display:
                                         false
                                 },
 
                                 grid: {
-
                                     display:
                                         false
                                 },
@@ -2334,7 +2174,6 @@
                                         "#77736d",
 
                                     font: {
-
                                         size:
                                             10
                                     }
@@ -2411,57 +2250,21 @@
             }
 
 
-            /*
-             * USUÁRIO
-             *
-             * OBRIGATORIAMENTE pelo Supabase Auth.
-             */
-
             await carregarUsuario(
                 supabase
             );
 
-
-            /*
-             * Se não tiver UUID válido,
-             * não tenta consultar tabelas
-             * que dependem do usuário.
-             */
-
-            if (!uuidValido(estado.userId)) {
-
-                console.warn(
-                    "Dashboard sem usuário autenticado."
-                );
-            }
-
-
-            /*
-             * DADOS
-             */
 
             await carregarDados(
                 supabase
             );
 
 
-            /*
-             * INDICADORES
-             */
-
             atualizarIndicadores();
 
 
-            /*
-             * GRÁFICO
-             */
-
             renderRevenueChart();
 
-
-            /*
-             * FORMULÁRIO
-             */
 
             vincularFormulario();
 
@@ -2475,6 +2278,11 @@
                 console.log(
                     "User ID:",
                     estado.userId
+                );
+
+                console.log(
+                    "Pedidos Kiwify:",
+                    estado.ebookPedidos.length
                 );
             }
 
